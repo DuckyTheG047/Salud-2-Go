@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="description" content="Salud 2 Go — protección de salud para familias entre México y Estados Unidos.">
 <meta name="robots" content="index,follow">
+<meta name="salud2go-build" content="V20-quote-fix">
 <meta name="description" content="Explora asistencia médica, protección familiar y repatriación para familias entre México y Estados Unidos.">
 <meta name="theme-color" content="#7b466a">
 <title>Salud 2 Go | Protección para familias transfronterizas</title>
@@ -2076,16 +2077,25 @@ document.addEventListener("click",e=>{const x=e.target.closest("[data-track]");i
    ========================================================= */
 async function sendToSheets(payload){
   if(!SITE_CONFIG.WAITLIST_ENDPOINT)return {success:false,reason:"no_endpoint"};
+  const controller=new AbortController();
+  const timeout=setTimeout(()=>controller.abort(),12000);
+
   try{
     const response=await fetch(SITE_CONFIG.WAITLIST_ENDPOINT,{
       method:"POST",
       headers:{"Content-Type":"text/plain;charset=utf-8"},
-      body:JSON.stringify(payload)
+      body:JSON.stringify(payload),
+      signal:controller.signal
     });
+
+    clearTimeout(timeout);
+
     let data={success:response.ok};
     try{data=await response.json()}catch(_){}
+    if(typeof data.success==="undefined")data.success=response.ok;
     return data;
   }catch(error){
+    clearTimeout(timeout);
     console.warn("Sheets tracking error:",error);
     return {success:false,error:String(error)};
   }
@@ -2184,10 +2194,10 @@ function selectedPlanFromCustom(summary){
   return "custom";
 }
 
-function sendQuoteRecord(summary,email,phone){
+async function sendQuoteRecord(summary,email,phone){
   const quoteId=createQuoteId();
   const s=customState.selected;
-  return sendToSheets({
+  const payload={
     type:"quote",
     quote_id:quoteId,
     session_id:SESSION_ID,
@@ -2211,7 +2221,31 @@ function sendQuoteRecord(summary,email,phone){
     email,
     phone,
     cta_quote_clicked:true
-  });
+  };
+  const result=await sendToSheets(payload);
+  return {...result,quote_id:quoteId};
+}
+
+
+/* =========================================================
+   V20 — ID stability + lead de-duplication + quote reliability
+   ========================================================= */
+const SENT_LEAD_KEYS=new Set();
+
+function leadDedupeKey({source="",email="",phone=""}={}){
+  return [SESSION_ID,source,(email||"").trim().toLowerCase(),(phone||"").replace(/\s+/g,"")].join("|");
+}
+
+async function sendLeadRecordOnce(payload={}){
+  const key=leadDedupeKey(payload);
+  if(SENT_LEAD_KEYS.has(key)) return {success:true,deduped:true};
+  SENT_LEAD_KEYS.add(key);
+  try{
+    return await sendLeadRecord(payload);
+  }catch(error){
+    SENT_LEAD_KEYS.delete(key);
+    throw error;
+  }
 }
 
 /* diagnostic flow */
@@ -2319,7 +2353,7 @@ renderResult=function(){
   if(!safeSessionGet(key)){
     safeSessionSet(key,"1");
     sendDiagnosticRecord();
-    sendLeadRecord({
+    sendLeadRecordOnce({
       source:"diagnostic_quote",
       email:state.diagnosticLead.email||"",
       phone:state.diagnosticLead.phone||"",
@@ -2333,6 +2367,8 @@ renderResult=function(){
 
 renderStep();
 if(!savedDiagnosis){
+  if(!state.diagnosticId)state.diagnosticId="D-"+crypto.randomUUID();
+  persistDiagnosis();
   funnelEvent("diagnostic_started",1,"","","diagnostic");
   track("diagnostic_started",{});
 }
@@ -2534,7 +2570,8 @@ document.getElementById("personaliza")?.addEventListener("focusin",e=>{
 });
 
 document.getElementById("packageQuoteBtn").addEventListener("click",async()=>{
-  const phone=document.getElementById("packagePhone").value.trim();
+  try{
+const phone=document.getElementById("packagePhone").value.trim();
   const email=document.getElementById("packageEmail").value.trim();
   const consent=document.getElementById("packageConsent").checked;
   const msg=document.getElementById("packageQuoteMessage");
@@ -2562,18 +2599,30 @@ document.getElementById("packageQuoteBtn").addEventListener("click",async()=>{
   }
 
   msg.className="message ok";
-  msg.textContent="Listo. Guardamos tu combinación y tus datos para enviarte la cotización.";
+  msg.textContent="Guardando tu cotización...";
 
-  await sendLeadRecord({
+  await sendLeadRecordOnce({
     source:"package_builder",
     email,
     phone,
     selected_plan:selectedPlanFromCustom(summary),
     provider:summary.provider.name||""
   });
-  await sendQuoteRecord(summary,email,phone);
-  funnelEvent("quote_submitted","","cta","Quiero recibir mi cotización","package_builder");
-  funnelEvent("lead_submitted","","source","package_builder","package_builder");
+
+  const quoteResult=await sendQuoteRecord(summary,email,phone);
+
+  if(!quoteResult || quoteResult.success===false){
+    msg.className="message err";
+    msg.textContent="No pudimos guardar la cotización. Inténtalo nuevamente.";
+    track("quote_submit_error",{source:"package_builder"});
+    return;
+  }
+
+  msg.className="message ok";
+  msg.textContent="Listo. Guardamos tu combinación y tus datos para enviarte la cotización.";
+
+  await funnelEvent("quote_submitted","","cta","Quiero recibir mi cotización","package_builder");
+  await funnelEvent("lead_submitted","","source","package_builder","package_builder");
 
   track("package_quote_submit",{
     provider:summary.provider.name,
@@ -2583,6 +2632,15 @@ document.getElementById("packageQuoteBtn").addEventListener("click",async()=>{
     total:summary.total,
     currency:customState.currency
   });
+  }catch(error){
+    console.error("Quote submit error:",error);
+    const msg=document.getElementById("packageQuoteMessage");
+    if(msg){
+      msg.className="message err";
+      msg.textContent="No pudimos guardar la cotización. Inténtalo nuevamente.";
+    }
+    track("quote_submit_error",{source:"package_builder"});
+  }
 });
 
 applyStartingPlan("plan1");
@@ -2660,7 +2718,7 @@ async function submitLeadForm(formEl,messageEl){
      showFormMessage(messageEl,"ok","Modo demostración: configura WAITLIST_ENDPOINT para guardar registros reales.");
      track("generate_lead_demo",{interest:data.interest||""});
    }else{
-     await sendLeadRecord({
+     await sendLeadRecordOnce({
        source:formEl.classList.contains("modal-lead-form")?"modal_waitlist":"page_waitlist",
        name:data.name||"",
        email,
