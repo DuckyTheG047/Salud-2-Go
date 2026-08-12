@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="description" content="Salud 2 Go — protección de salud para familias entre México y Estados Unidos.">
 <meta name="robots" content="index,follow">
-<meta name="salud2go-build" content="V48-currency-button-fixed">
+<meta name="salud2go-build" content="V52-diagnostic-render-fix">
 <meta name="description" content="Explora asistencia médica, protección familiar y repatriación para familias entre México y Estados Unidos.">
 <meta name="theme-color" content="#7b466a">
 <title>Salud 2 Go | Protección para familias transfronterizas</title>
@@ -2655,7 +2655,7 @@ footer{
 
     <div class="type-step" data-step="7"><div class="type-content"><div class="type-number">7</div><div><h2>¿A dónde te enviamos tu cotización?</h2><p>Usaremos estos datos para mostrarte y guardar tu propuesta. No necesitas volver a llenar otro formulario.</p><div class="contact-fields"><label><span>Celular</span><input id="diagnosticPhone" type="tel" inputmode="tel" autocomplete="tel" placeholder="+1 o +52"></label><label><span>Correo electrónico</span><input id="diagnosticEmail" type="email" autocomplete="email" placeholder="nombre@correo.com"></label></div><label class="diag-consent"><input id="diagnosticConsent" type="checkbox"><span>Acepto recibir información del lanzamiento y que mi selección se utilice para generar esta cotización.</span></label></div></div></div>
 
-    <div class="type-step" data-step="8"><div class="builder-result quotation-result"><div class="result-topline"><div><div class="result-kicker">Tu cotización</div><h3 id="resultTitle">Protección familiar personalizada</h3></div><div class="currency-toggle" aria-label="Moneda"><button class="currency-btn active" data-currency="USD">USD</button><button class="currency-btn" data-currency="MXN">MXN</button></div></div><p id="resultText">Una combinación creada a partir de tus necesidades.</p><div class="result-metrics"><div class="metric"><small>Personas</small><strong id="resultPeople">3</strong></div><div class="metric provider-public-hidden" aria-hidden="true"><small>Proveedor sugerido</small><strong id="resultProvider">—</strong></div><div class="metric"><small>Plan</small><strong id="resultPlan">Plan 1</strong></div></div><div class="selected-services" id="resultServices"></div><div class="price-box quote-price"><small>Costo benchmark estimado</small><strong id="resultPrice">$0.00 USD</strong><p id="resultPriceNote">Unidad y periodicidad no confirmadas.</p></div><div class="explain-grid" id="alternativeCards"></div><div id="scoreExplanation"></div><div class="result-actions"><button class="btn btn-primary" data-modal="waitlist">Quiero recibir novedades</button><button class="btn btn-secondary" id="restartDiagnosis" type="button">Hacer otra cotización</button></div></div></div>
+    <div class="type-step" data-step="8"><div class="builder-result quotation-result"><div class="result-topline"><div><div class="result-kicker">Tu cotización</div><h3 id="resultTitle">Protección familiar personalizada</h3></div><div class="currency-toggle" aria-label="Moneda"><button class="currency-btn active" data-currency="USD">USD</button><button class="currency-btn" data-currency="MXN">MXN</button></div></div><p id="resultText">Una combinación creada a partir de tus necesidades.</p><div class="result-metrics"><div class="metric"><small>Personas</small><strong id="resultPeople">3</strong></div><div class="metric provider-public-hidden" aria-hidden="true"><small>Proveedor sugerido</small><strong id="resultProvider">—</strong></div><div class="metric"><small>Plan</small><strong id="resultPlan">Plan 1</strong></div></div><div class="selected-services" id="resultServices"></div><div class="price-box quote-price"><small>Precio estimado de tu selección</small><strong id="resultPrice">$0.00 USD</strong><p id="resultPriceNote">Precio mensual estimado según tu selección.</p></div><div class="explain-grid" id="alternativeCards"></div><div id="scoreExplanation"></div><div class="result-actions"><button class="btn btn-primary" data-modal="waitlist">Quiero recibir novedades</button><button class="btn btn-secondary" id="restartDiagnosis" type="button">Hacer otra cotización</button></div></div></div>
 
     <div class="typeform-nav"><button type="button" class="type-back" id="backBtn" type="button">← Atrás</button><button type="button" class="type-next" id="nextBtn" type="button" disabled>Continuar</button></div>
   </div>
@@ -3555,12 +3555,17 @@ function renderResult(){
 
   const providerKey=recommended.key;
   const provider=PROVIDERS[providerKey];
-  const pricing=bundlePrice(providerKey,"inclusion",plans);
+  const COMMERCIAL_PLAN_PRICES={plan1:3.99,plan2:7.99,plan3:11.99};
+const selectedCommercialPrices=selectedPlans.map(p=>COMMERCIAL_PLAN_PRICES[p]).filter(v=>Number.isFinite(v));
+const pricing={total:selectedCommercialPrices.length
+  ? selectedCommercialPrices.reduce((sum,value)=>sum+value,0)/selectedCommercialPrices.length
+  : 0};
 
   const title=selectedPlans.map(p=>PLAN_LABELS[p]).join(" + ");
   const planDisplay=selectedPlans.map(p=>PLAN_LABELS[p]).join(" + ");
 
-  document.getElementById("resultTitle").textContent=title||"Protección familiar personalizada";
+  document.getElementById("resultTitle").textContent=
+  selectedPlans.length>1 ? "Protección familiar personalizada" : (title||"Protección familiar personalizada");
   document.getElementById("resultText").textContent=
     `La recomendación considera tus necesidades, prioridades, ubicación y los planes que seleccionaste. Coincidencia estimada: ${recommended.total}%.`;
 
@@ -3571,8 +3576,7 @@ function renderResult(){
     q.needs.map(n=>`<span>${SERVICE_LABELS[n]}</span>`).join("");
 
   document.getElementById("resultPrice").textContent=money(pricing.total);
-  document.getElementById("resultPriceNote").textContent=
-    `Base benchmark en USD · conversión MXN a ${FX_MXN_PER_USD.toFixed(2)} MXN/USD. Unidad y periodicidad no confirmadas.`;
+  document.getElementById("resultPriceNote").textContent=selectedPlans.length>1?`Precio mensual promedio de los ${selectedPlans.length} planes seleccionados.`:`Precio mensual del plan seleccionado.`;
 
   const cards=[
     ["Recomendada",recommended,true],
@@ -3580,14 +3584,7 @@ function renderResult(){
     ["Mayor red",widest,false]
   ];
 
-  document.getElementById("alternativeCards").innerHTML=cards.map(
-    ([label,item,isRec])=>
-      `<div class="explain-card ${isRec?"recommended":""}">
-        <small>${label}</small>
-        <strong>${PROVIDERS[item.key].name}</strong>
-        <span>${item.total}% coincidencia · ${money(item.price)} · red máx. ${PROVIDERS[item.key].networkMax.toLocaleString()}</span>
-      </div>`
-  ).join("");
+  document.getElementById("alternativeCards").innerHTML="";
 
   document.getElementById("scoreExplanation").innerHTML=[
     ["Necesidades",recommended.needScore],
