@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="description" content="Salud 2 Go — protección de salud para familias entre México y Estados Unidos.">
 <meta name="robots" content="index,follow">
-<meta name="salud2go-build" content="EXP-E-alto">
+<meta name="salud2go-build" content="EXP-E-alto-plan3-9.99">
 <meta name="description" content="Explora asistencia médica, protección familiar y repatriación para familias entre México y Estados Unidos.">
 <meta name="theme-color" content="#7b466a">
 <title>Salud 2 Go | Protección para familias transfronterizas</title>
@@ -2756,8 +2756,8 @@ footer{
         </div>
         <div class="service-cost">
           <small>Inclusión · mensual · sin IVA</small>
-          <strong class="global-price-range" data-usd-max="7.99">$7.99 USD</strong>
-          <span>por familia / mes<div class="pricing-microcopy">≈ $2.00 USD por semana</div></span>
+          <strong class="global-price-range" data-usd-max="9.99">$9.99 USD</strong>
+          <span>por familia / mes<div class="pricing-microcopy">≈ $2.50 USD por semana</div></span>
         </div>
       </article>
     </div>
@@ -3555,7 +3555,7 @@ function renderResult(){
 
   const providerKey=recommended.key;
   const provider=PROVIDERS[providerKey];
-  const COMMERCIAL_PLAN_PRICES={plan1:5.99,plan2:7.99,plan3:7.99};
+  const COMMERCIAL_PLAN_PRICES={plan1:5.99,plan2:7.99,plan3:9.99};
 const selectedCommercialPrices=selectedPlans.map(p=>COMMERCIAL_PLAN_PRICES[p]).filter(v=>Number.isFinite(v));
 const pricing={total:selectedCommercialPrices.length
   ? selectedCommercialPrices.reduce((sum,value)=>sum+value,0)/selectedCommercialPrices.length
