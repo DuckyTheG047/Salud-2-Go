@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="description" content="Salud 2 Go — protección de salud para familias entre México y Estados Unidos.">
 <meta name="robots" content="index,follow">
-<meta name="salud2go-build" content="V42-care-centered-hero">
+<meta name="salud2go-build" content="V48-currency-button-fixed">
 <meta name="description" content="Explora asistencia médica, protección familiar y repatriación para familias entre México y Estados Unidos.">
 <meta name="theme-color" content="#7b466a">
 <title>Salud 2 Go | Protección para familias transfronterizas</title>
@@ -2527,6 +2527,45 @@ footer{
   main section[id]{scroll-margin-top:82px;}
 </style>
 
+<style id="v44-whatsapp-floating">
+.whatsapp-float{position:fixed;right:24px;bottom:24px;z-index:9998;width:58px;height:58px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:#25D366;color:#fff;box-shadow:0 10px 28px rgba(0,0,0,.18);text-decoration:none;transition:.18s ease}.whatsapp-float:hover{transform:translateY(-2px) scale(1.03)}.whatsapp-float svg{width:31px;height:31px;fill:currentColor}.whatsapp-float-label{position:absolute;right:70px;white-space:nowrap;background:#fff;color:#342b30;border:1px solid #eadfdb;border-radius:999px;padding:9px 13px;font-size:12px;font-weight:800;opacity:0;pointer-events:none}.whatsapp-float:hover .whatsapp-float-label{opacity:1}@media(max-width:620px){.whatsapp-float{right:18px;bottom:18px;width:54px;height:54px}.whatsapp-float-label{display:none}}
+</style>
+
+<style id="v46-pricing-psychology">
+.pricing-recommended{
+  display:inline-flex;
+  align-items:center;
+  margin-left:12px;
+  padding:6px 10px;
+  border-radius:999px;
+  background:#8f2f70;
+  color:#fff;
+  font-size:11px;
+  line-height:1;
+  font-weight:800;
+  letter-spacing:.06em;
+  text-transform:uppercase;
+  vertical-align:middle;
+  transform:translateY(-3px);
+}
+.pricing-microcopy{
+  margin-top:7px;
+  font-size:11px;
+  line-height:1.35;
+  color:#76656f;
+  font-weight:600;
+}
+@media(max-width:700px){
+  .pricing-recommended{
+    margin-left:0;
+    margin-top:8px;
+    width:max-content;
+    display:flex;
+    transform:none;
+  }
+}
+</style>
+
 </head>
 
 <body id="top" class="art-directed">
@@ -2546,7 +2585,7 @@ footer{
 </a>
   <nav class="nav-links"><a href="#servicios">Servicios y costos</a><a href="#personaliza">Arma tu paquete</a><a href="#comparar">Compara los servicios</a><a href="#opiniones">Opiniones</a><a href="#preguntas">Ayuda</a></nav>
   
-  <div class="nav-actions"><button class="btn btn-secondary" data-modal="waitlist">Conoce más</button><a class="btn btn-primary" href="#diagnostico">Quiero mi cotización</a><div class="global-currency-control" id="globalCurrencyControl" aria-label="Selector global de moneda">
+  <div class="nav-actions"><a class="btn btn-primary" href="#diagnostico">Quiero mi cotización</a><div class="global-currency-control" id="globalCurrencyControl" aria-label="Selector global de moneda">
   <span>Mostrar precio en</span>
   <div class="global-currency-toggle" role="group" aria-label="Moneda">
     <button type="button" class="global-currency-btn active" data-global-currency="USD">USD</button>
@@ -2600,7 +2639,7 @@ footer{
         </button>
         <button type="button" class="type-option plan-choice multi" data-field="plans" data-value="plan2">
           <span class="letter">B</span>
-          <strong>Plan 2 · Salud ampliada</strong>
+          <strong>Plan 2 · Salud ampliada <span class="pricing-recommended">Recomendado</span></strong>
           <small>Todo Plan 1 + consulta presencial con especialista + ambulancia.</small>
         </button>
         <button type="button" class="type-option plan-choice multi" data-field="plans" data-value="plan3">
@@ -2672,8 +2711,8 @@ footer{
         </div>
         <div class="service-cost">
           <small>Inclusión · mensual · sin IVA</small>
-          <strong class="global-price-range" data-usd-max="2.53">$2.53 USD</strong>
-          <span>Precio de referencia del plan</span>
+          <strong class="global-price-range" data-usd-max="3.99">$3.99 USD</strong>
+          <span>por familia / mes<div class="pricing-microcopy">≈ $1 USD por semana</div></span>
         </div>
       </article>
 
@@ -2696,8 +2735,8 @@ footer{
         </div>
         <div class="service-cost">
           <small>Inclusión · mensual · sin IVA</small>
-          <strong class="global-price-range" data-usd-max="3.64">$3.64 USD</strong>
-          <span>Precio de referencia del plan</span>
+          <strong class="global-price-range" data-usd-max="7.99">$7.99 USD</strong>
+          <span>por familia / mes<div class="pricing-microcopy">Menos de $2 USD por semana</div></span>
         </div>
       </article>
 
@@ -2717,8 +2756,8 @@ footer{
         </div>
         <div class="service-cost">
           <small>Inclusión · mensual · sin IVA</small>
-          <strong class="global-price-range" data-usd-max="9.94">$9.94 USD</strong>
-          <span>Precio de referencia del plan</span>
+          <strong class="global-price-range" data-usd-max="11.99">$11.99 USD</strong>
+          <span>por familia / mes<div class="pricing-microcopy">Protección ante eventos de mayor impacto</div></span>
         </div>
       </article>
     </div>
@@ -3895,8 +3934,11 @@ applyStartingPlan("plan1");
 let compareCurrency="USD";
 
 function updateCompareCurrency(){
-  GLOBAL_CURRENCY=compareCurrency;
-  updateAllLandingPrices();
+  try{
+    if(typeof setGlobalCurrency==="function"){
+      setGlobalCurrency(compareCurrency);
+    }
+  }catch(_){}
 }
 document.addEventListener("click",e=>{
   const planBtn=e.target.closest("[data-compare-plan]");
@@ -4041,10 +4083,7 @@ function s2gSyncToggleUI(){
 }
 function s2gRenderCurrency(){
   s2gSyncToggleUI();
-  document.querySelectorAll("[data-usd-min][data-usd-max]").forEach(el=>{
-    const maxUSD=Number(el.dataset.usdMax);
-    el.textContent=`${s2gFormatMoney(maxUSD)} ${GLOBAL_CURRENCY}`;
-  });
+  document.querySelectorAll("[data-usd-max]").forEach(el=>{ const maxUSD=Number(el.dataset.usdMax); el.textContent=`${s2gFormatMoney(maxUSD)} ${GLOBAL_CURRENCY}`; });
   document.querySelectorAll("[data-usd-amount]").forEach(el=>{
     const n=Number(el.dataset.usdAmount);
     el.textContent=`${s2gFormatMoney(n,GLOBAL_CURRENCY,n>=100?0:2)} ${GLOBAL_CURRENCY}`;
@@ -4214,5 +4253,8 @@ document.addEventListener("DOMContentLoaded", function(){
 </script>
 
 
+<a class="whatsapp-float" id="whatsappFloat" href="https://wa.me/525573099149?text=Hola%2C%20me%20interesa%20conocer%20m%C3%A1s%20sobre%20Salud%202%20Go%20y%20recibir%20informaci%C3%B3n%20sobre%20los%20planes." target="_blank" rel="noopener noreferrer" aria-label="Hablar con Salud 2 Go por WhatsApp"><span class="whatsapp-float-label">Habla con nosotros</span><svg viewBox="0 0 32 32" aria-hidden="true">
+  <path fill="currentColor" d="M16 5.3c-5.9 0-10.7 4.7-10.7 10.5 0 2 .6 3.9 1.6 5.5L5.3 27l5.9-1.5c1.5.8 3.1 1.2 4.8 1.2 5.9 0 10.7-4.7 10.7-10.5S21.9 5.3 16 5.3zm0 19.3c-1.6 0-3.1-.4-4.4-1.2l-.3-.2-3.5.9.9-3.4-.2-.3a8.5 8.5 0 0 1-1.3-4.5c0-4.7 3.9-8.5 8.8-8.5s8.8 3.8 8.8 8.5-3.9 8.7-8.8 8.7zm4.8-6.4c-.3-.1-1.6-.8-1.8-.9-.2-.1-.4-.1-.6.1l-.8 1c-.1.2-.3.2-.6.1-1.5-.7-2.5-1.3-3.5-3-.2-.3 0-.5.1-.6l.6-.7c.1-.2.2-.3.3-.5.1-.2 0-.4 0-.5l-.8-1.9c-.2-.5-.4-.4-.6-.4h-.5c-.2 0-.5.1-.7.3-.2.3-.9.9-.9 2.2 0 1.3.9 2.5 1.1 2.7.1.2 1.9 2.9 4.6 4 .6.3 1.1.4 1.5.5.6.2 1.2.2 1.6.1.5-.1 1.6-.7 1.8-1.3.2-.6.2-1.1.2-1.2-.1-.1-.3-.2-.5-.3z"/>
+</svg></a><script id="v44-whatsapp-tracking">document.getElementById("whatsappFloat")?.addEventListener("click",function(){try{if(typeof track==="function")track("whatsapp_click",{placement:"floating_button",destination:"sales_chat"});}catch(_){}try{if(typeof gtag==="function")gtag("event","whatsapp_click",{event_category:"contact",event_label:"floating_whatsapp"});}catch(_){}});</script>
 </body>
 </html>
