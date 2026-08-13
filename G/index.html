@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="description" content="Salud 2 Go — protección de salud para familias entre México y Estados Unidos.">
 <meta name="robots" content="index,follow">
-<meta name="salud2go-build" content="EXP-G-payment-frequency-v6">
+<meta name="salud2go-build" content="EXP-G-v7-interactions-fixed">
 <meta name="description" content="Explora asistencia médica, protección familiar y repatriación para familias entre México y Estados Unidos.">
 <meta name="theme-color" content="#7b466a">
 <title>Salud 2 Go | Protección para familias transfronterizas</title>
@@ -3664,7 +3664,7 @@ function renderResult(){
 
   const providerKey=recommended.key;
   const provider=PROVIDERS[providerKey];
-  const COMMERCIAL_PLAN_PRICES_USD={plan1:1.50,plan2:2.50,plan3:3.50}; const COMMERCIAL_PLAN_PRICES_MXN={plan1:30,plan2:45,plan3:60}; const COMMERCIAL_PLAN_PRICES=GLOBAL_CURRENCY==="MXN"?COMMERCIAL_PLAN_PRICES_MXN:COMMERCIAL_PLAN_PRICES_USD;
+  const COMMERCIAL_PLAN_PRICES_USD={plan1:1.50,plan2:2.50,plan3:3.50}; const COMMERCIAL_PLAN_PRICES_MXN={plan1:30,plan2:45,plan3:60}; const ACTIVE_QUOTE_CURRENCY=state.currency||"USD"; const COMMERCIAL_PLAN_PRICES=ACTIVE_QUOTE_CURRENCY==="MXN"?COMMERCIAL_PLAN_PRICES_MXN:COMMERCIAL_PLAN_PRICES_USD;
 const selectedCommercialPrices=selectedPlans.map(p=>COMMERCIAL_PLAN_PRICES[p]).filter(v=>Number.isFinite(v));
 const pricing={total:selectedCommercialPrices.length
   ? selectedCommercialPrices.reduce((sum,value)=>sum+value,0)/selectedCommercialPrices.length
@@ -3694,7 +3694,7 @@ const paymentNotes={
   annual:"Equivale a 12 meses del precio mensual estimado."
 };
 function formatSelectedCurrency(value){
-  return `$${Number(value).toFixed(2)} ${GLOBAL_CURRENCY}`;
+  return `$${Number(value).toFixed(2)} ${ACTIVE_QUOTE_CURRENCY}`;
 }
 function updatePaymentFrequencyUI(){
   const prices={
@@ -4340,7 +4340,7 @@ function resetDiagnosis(){
   };
   state.recommendation=null;
   state.priceReaction=null;
-  state.diagnosticLead={phone:"",email:"",consent:false};
+  state.diagnosticLead={phone:"",email:"",consent:false}; selectedPaymentFrequency="monthly";
 
   safeStorageRemove("cross_border_diagnosis");
 
@@ -4441,13 +4441,48 @@ document.addEventListener("click",function(e){
   if(!btn)return;
   e.preventDefault();
   selectedPaymentFrequency=btn.dataset.paymentFrequency||"monthly";
-  if(typeof updatePaymentFrequencyUI==="function")updatePaymentFrequencyUI();
+  if(typeof state!=="undefined" && state.step===8 && typeof renderResult==="function"){
+    renderResult();
+  }
   try{
     track("payment_frequency_selected",{
       payment_frequency:selectedPaymentFrequency,
       experiment_variant:typeof EXPERIMENT_VARIANT!=="undefined"?EXPERIMENT_VARIANT:""
     });
   }catch(_){}
+});
+</script>
+
+
+<script id="v7-quote-interaction-safeguard">
+document.addEventListener("click",function(e){
+  const currencyBtn=e.target.closest(".quotation-result [data-currency]");
+  if(currencyBtn){
+    e.preventDefault();
+    const currency=currencyBtn.dataset.currency;
+    if(currency==="USD"||currency==="MXN"){
+      state.currency=currency;
+      try{persistDiagnosis();}catch(_){}
+      document.querySelectorAll(".quotation-result [data-currency]").forEach(x=>{
+        x.classList.toggle("active",x.dataset.currency===currency);
+      });
+      if(state.step===8 && typeof renderResult==="function")renderResult();
+      try{track("currency_toggle",{currency});}catch(_){}
+    }
+    return;
+  }
+
+  const restart=e.target.closest("#restartDiagnosis");
+  if(restart){
+    e.preventDefault();
+    if(typeof resetDiagnosis==="function"){
+      resetDiagnosis();
+    }else{
+      try{safeStorageRemove("cross_border_diagnosis");}catch(_){}
+      location.hash="#diagnostico";
+      location.reload();
+    }
+  }
 });
 </script>
 
