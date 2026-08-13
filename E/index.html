@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="description" content="Salud 2 Go — protección de salud para familias entre México y Estados Unidos.">
 <meta name="robots" content="index,follow">
-<meta name="salud2go-build" content="EXP-E-v9-mxn-double-conversion-fixed">
+<meta name="salud2go-build" content="EXP-E-v11-price-labels">
 <meta name="description" content="Explora asistencia médica, protección familiar y repatriación para familias entre México y Estados Unidos.">
 <meta name="theme-color" content="#7b466a">
 <title>Salud 2 Go | Protección para familias transfronterizas</title>
@@ -2657,6 +2657,39 @@ footer{
 }
 </style>
 
+
+<style id="v11-price-label-visibility">
+/* Mayor legibilidad en la información secundaria de precios */
+.service-cost > small{
+  font-size:12px !important;
+  line-height:1.35 !important;
+  letter-spacing:.10em !important;
+  font-weight:700 !important;
+}
+.service-cost > span{
+  display:block !important;
+  margin-top:7px !important;
+  font-size:13px !important;
+  line-height:1.4 !important;
+  font-weight:600 !important;
+}
+.service-cost .pricing-microcopy{
+  margin-top:7px !important;
+  font-size:13px !important;
+  line-height:1.4 !important;
+  font-weight:700 !important;
+}
+@media(max-width:700px){
+  .service-cost > small{
+    font-size:11px !important;
+  }
+  .service-cost > span,
+  .service-cost .pricing-microcopy{
+    font-size:12px !important;
+  }
+}
+</style>
+
 </head>
 
 <body id="top" class="art-directed">
@@ -2819,7 +2852,7 @@ footer{
           <p class="plan-detail-note">Check-up básico: 1 evento al año. Las asistencias remotas se ofrecen de acuerdo con las condiciones y límites establecidos para cada servicio.</p>
         </div>
         <div class="service-cost">
-          <small>Inclusión · mensual · sin IVA</small>
+          <small>Mensual · sin IVA</small>
           <strong class="global-price-range" data-usd-max="5.99" data-mxn-price="110">$5.99 USD</strong>
           <span>por familia / mes<div class="pricing-microcopy">≈ $1.50 USD por semana</div></span>
         </div>
@@ -2843,7 +2876,7 @@ footer{
           <p class="plan-detail-note">Especialista: 2 eventos al año por grupo familiar. Ambulancia: 1 evento al año. Los tiempos de espera pueden variar según las condiciones del servicio.</p>
         </div>
         <div class="service-cost">
-          <small>Inclusión · mensual · sin IVA</small>
+          <small>Mensual · sin IVA</small>
           <strong class="global-price-range" data-usd-max="7.99" data-mxn-price="145">$7.99 USD</strong>
           <span>por familia / mes<div class="pricing-microcopy">≈ $2.00 USD por semana</div></span>
         </div>
@@ -2864,7 +2897,7 @@ footer{
           <p class="plan-detail-note">1 evento al año por grupo familiar. Los límites, edades máximas y tiempos de espera pueden variar según las condiciones del servicio.</p>
         </div>
         <div class="service-cost">
-          <small>Inclusión · mensual · sin IVA</small>
+          <small>Mensual · sin IVA</small>
           <strong class="global-price-range" data-usd-max="9.99" data-mxn-price="180">$9.99 USD</strong>
           <span>por familia / mes<div class="pricing-microcopy">≈ $2.50 USD por semana</div></span>
         </div>
