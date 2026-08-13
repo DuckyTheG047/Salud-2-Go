@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="description" content="Salud 2 Go — protección de salud para familias entre México y Estados Unidos.">
 <meta name="robots" content="index,follow">
-<meta name="salud2go-build" content="EXP-G-v12-sheets-full">
+<meta name="salud2go-build" content="EXP-G-v13-quote-commercial-price">
 <meta name="description" content="Explora asistencia médica, protección familiar y repatriación para familias entre México y Estados Unidos.">
 <meta name="theme-color" content="#7b466a">
 <title>Salud 2 Go | Protección para familias transfronterizas</title>
@@ -2963,7 +2963,7 @@ footer{
         <div class="eyebrow">Arma tu paquete</div>
         <h2>Empieza con un plan y ajústalo a lo que realmente necesitas.</h2>
       </div>
-      <p>Elige Plan 1, 2 o 3 como punto de partida. Después puedes agregar o eliminar coberturas de cualquiera de los planes. El precio se estima usando los bloques completos disponibles en el benchmark.</p>
+      <p>Elige Plan 1, 2 o 3 como punto de partida. Después puedes agregar o eliminar coberturas de cualquiera de los planes. La cotización se estima con los precios definidos para los planes de esta versión.</p>
     </div>
 
     <div class="package-toolbar">
@@ -3884,7 +3884,7 @@ const PLAN1_COVERAGES=["telemedicine","digital_rx","pharmacy","urgent_care","mx_
 const PLAN2_EXTRA=["specialist","ambulance"];
 const PLAN3_COVERAGES=["repatriation","funeral"];
 
-const customState={
+const CUSTOM_COMMERCIAL_PRICES_USD={plan1:1.50,plan2:2.50,plan3:3.50}; const CUSTOM_COMMERCIAL_PRICES_MXN={plan1:30,plan2:45,plan3:60}; const customState={
   startPlan:"plan1",
   currency:"USD",
   selected:new Set(PLAN1_COVERAGES)
@@ -3902,10 +3902,7 @@ function chooseCustomProvider(){
   return "Anemex";
 }
 
-function customMoney(value){
-  const converted=customState.currency==="MXN"?value*FX_MXN_PER_USD:value;
-  return `$${converted.toFixed(2)} ${customState.currency}`;
-}
+function customMoney(value){ return `$${Number(value).toFixed(2)} ${customState.currency}`; }
 
 function applyStartingPlan(plan){
   customState.startPlan=plan;
@@ -3936,28 +3933,19 @@ function syncCoverageInputs(){
 }
 
 function calculateCustomBundle(providerKey){
-  const hasHealthBase=PLAN1_COVERAGES.some(x=>customState.selected.has(x));
-  const hasPlan2=PLAN2_EXTRA.some(x=>customState.selected.has(x));
-  const hasPlan3=PLAN3_COVERAGES.some(x=>customState.selected.has(x));
-
-  let total=0;
-  const blocks=[];
-
-  if(hasPlan2){
-    total+=planPricing(providerKey,"plan2");
-    blocks.push("Plan 2");
-  }else if(hasHealthBase){
-    total+=planPricing(providerKey,"plan1");
-    blocks.push("Plan 1");
-  }
-
-  if(hasPlan3){
-    total+=planPricing(providerKey,"plan3");
-    blocks.push("Plan 3");
-  }
-
-  return {total,blocks,hasHealthBase,hasPlan2,hasPlan3};
-}
+          const hasHealthBase=PLAN1_COVERAGES.some(x=>customState.selected.has(x));
+          const hasPlan2=PLAN2_EXTRA.some(x=>customState.selected.has(x));
+          const hasPlan3=PLAN3_COVERAGES.some(x=>customState.selected.has(x));
+          const blocks=[];
+          const planKeys=[];
+          if(hasPlan2){ blocks.push("Plan 2"); planKeys.push("plan2"); }
+          else if(hasHealthBase){ blocks.push("Plan 1"); planKeys.push("plan1"); }
+          if(hasPlan3){ blocks.push("Plan 3"); planKeys.push("plan3"); }
+          const table=customState.currency==="MXN"?CUSTOM_COMMERCIAL_PRICES_MXN:CUSTOM_COMMERCIAL_PRICES_USD;
+          const values=planKeys.map(k=>Number(table[k])).filter(Number.isFinite);
+          const total=values.length?values.reduce((a,b)=>a+b,0)/values.length:0;
+          return {total,blocks,planKeys,hasHealthBase,hasPlan2,hasPlan3};
+        }
 
 function updateCustomizer(){
   const providerKey=chooseCustomProvider();
