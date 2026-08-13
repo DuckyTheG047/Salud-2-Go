@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="description" content="Salud 2 Go — protección de salud para familias entre México y Estados Unidos.">
 <meta name="robots" content="index,follow">
-<meta name="salud2go-build" content="EXP-G-v7-interactions-fixed">
+<meta name="salud2go-build" content="EXP-G-v8-independent-mxn-fixed">
 <meta name="description" content="Explora asistencia médica, protección familiar y repatriación para familias entre México y Estados Unidos.">
 <meta name="theme-color" content="#7b466a">
 <title>Salud 2 Go | Protección para familias transfronterizas</title>
@@ -4230,8 +4230,16 @@ function s2gRenderCurrency(){
   document.querySelectorAll("[data-usd-max]").forEach(el=>{
       const usd=Number(el.dataset.usdMax);
       const mxn=Number(el.dataset.mxnPrice);
-      const value=(GLOBAL_CURRENCY==="MXN" && Number.isFinite(mxn))?mxn:usd;
+      const value=GLOBAL_CURRENCY==="MXN"?mxn:usd;
       el.textContent=`${s2gFormatMoney(value)} ${GLOBAL_CURRENCY}`;
+    });
+document.querySelectorAll(".pricing-microcopy").forEach((el,index)=>{
+      const priceEl=document.querySelectorAll("[data-usd-max]")[index];
+      if(!priceEl)return;
+      const usd=Number(priceEl.dataset.usdMax);
+      const mxn=Number(priceEl.dataset.mxnPrice);
+      const weekly=(GLOBAL_CURRENCY==="MXN"?mxn:usd)/4;
+      el.textContent=`≈ ${s2gFormatMoney(weekly)} ${GLOBAL_CURRENCY} por semana`;
     });
   document.querySelectorAll("[data-usd-amount]").forEach(el=>{
     const n=Number(el.dataset.usdAmount);
