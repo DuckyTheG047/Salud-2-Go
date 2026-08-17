@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="description" content="Salud 2 Go — protección de salud para familias entre México y Estados Unidos.">
 <meta name="robots" content="index,follow">
-<meta name="salud2go-build" content="EXP-G-v13-quote-commercial-price">
+<meta name="salud2go-build" content="EXP-G-v13-ga4-conversions">
 <meta name="description" content="Explora asistencia médica, protección familiar y repatriación para familias entre México y Estados Unidos.">
 <meta name="theme-color" content="#7b466a">
 <title>Salud 2 Go | Protección para familias transfronterizas</title>
@@ -2963,7 +2963,7 @@ footer{
         <div class="eyebrow">Arma tu paquete</div>
         <h2>Empieza con un plan y ajústalo a lo que realmente necesitas.</h2>
       </div>
-      <p>Elige Plan 1, 2 o 3 como punto de partida. Después puedes agregar o eliminar coberturas de cualquiera de los planes. La cotización se estima con los precios definidos para los planes de esta versión.</p>
+      <p>Elige Plan 1, 2 o 3 como punto de partida. Después puedes agregar o eliminar coberturas de cualquiera de los planes. El precio se estima usando los bloques completos disponibles en el benchmark.</p>
     </div>
 
     <div class="package-toolbar">
@@ -3622,10 +3622,20 @@ nextBtn.onclick=async()=>{
   nextBtn.disabled=true;
 
   if(state.step===7){
-    track("diagnostic_contact_complete",{has_phone:true,has_email:true});
-    ensureLeadId();
-    funnelEvent("diagnostic_completed",7,"contact","completed","diagnostic");
-  }
+      track("diagnostic_contact_complete",{has_phone:true,has_email:true});
+      ensureLeadId();
+      funnelEvent("diagnostic_completed",7,"contact","completed","diagnostic");
+      const conversionKey="salud2go_ga4_generate_lead_"+state.diagnosticId;
+      if(!safeSessionGet(conversionKey)){
+        safeSessionSet(conversionKey,"1");
+        track("generate_lead",{
+          lead_source:"diagnostic_quote",
+          currency:state.currency||"USD",
+          selected_plan:(state.quiz.plans||[]).join("+")||state.quiz.plan||"",
+          payment_frequency:typeof selectedPaymentFrequency!=="undefined"?selectedPaymentFrequency:"monthly"
+        });
+      }
+    }
 
   track("builder_step_complete",{step:state.step});
 
@@ -3884,7 +3894,7 @@ const PLAN1_COVERAGES=["telemedicine","digital_rx","pharmacy","urgent_care","mx_
 const PLAN2_EXTRA=["specialist","ambulance"];
 const PLAN3_COVERAGES=["repatriation","funeral"];
 
-const CUSTOM_COMMERCIAL_PRICES_USD={plan1:1.50,plan2:2.50,plan3:3.50}; const CUSTOM_COMMERCIAL_PRICES_MXN={plan1:30,plan2:45,plan3:60}; const customState={
+const customState={
   startPlan:"plan1",
   currency:"USD",
   selected:new Set(PLAN1_COVERAGES)
@@ -3902,7 +3912,10 @@ function chooseCustomProvider(){
   return "Anemex";
 }
 
-function customMoney(value){ return `$${Number(value).toFixed(2)} ${customState.currency}`; }
+function customMoney(value){
+  const converted=customState.currency==="MXN"?value*FX_MXN_PER_USD:value;
+  return `$${converted.toFixed(2)} ${customState.currency}`;
+}
 
 function applyStartingPlan(plan){
   customState.startPlan=plan;
@@ -3933,19 +3946,28 @@ function syncCoverageInputs(){
 }
 
 function calculateCustomBundle(providerKey){
-          const hasHealthBase=PLAN1_COVERAGES.some(x=>customState.selected.has(x));
-          const hasPlan2=PLAN2_EXTRA.some(x=>customState.selected.has(x));
-          const hasPlan3=PLAN3_COVERAGES.some(x=>customState.selected.has(x));
-          const blocks=[];
-          const planKeys=[];
-          if(hasPlan2){ blocks.push("Plan 2"); planKeys.push("plan2"); }
-          else if(hasHealthBase){ blocks.push("Plan 1"); planKeys.push("plan1"); }
-          if(hasPlan3){ blocks.push("Plan 3"); planKeys.push("plan3"); }
-          const table=customState.currency==="MXN"?CUSTOM_COMMERCIAL_PRICES_MXN:CUSTOM_COMMERCIAL_PRICES_USD;
-          const values=planKeys.map(k=>Number(table[k])).filter(Number.isFinite);
-          const total=values.length?values.reduce((a,b)=>a+b,0)/values.length:0;
-          return {total,blocks,planKeys,hasHealthBase,hasPlan2,hasPlan3};
-        }
+  const hasHealthBase=PLAN1_COVERAGES.some(x=>customState.selected.has(x));
+  const hasPlan2=PLAN2_EXTRA.some(x=>customState.selected.has(x));
+  const hasPlan3=PLAN3_COVERAGES.some(x=>customState.selected.has(x));
+
+  let total=0;
+  const blocks=[];
+
+  if(hasPlan2){
+    total+=planPricing(providerKey,"plan2");
+    blocks.push("Plan 2");
+  }else if(hasHealthBase){
+    total+=planPricing(providerKey,"plan1");
+    blocks.push("Plan 1");
+  }
+
+  if(hasPlan3){
+    total+=planPricing(providerKey,"plan3");
+    blocks.push("Plan 3");
+  }
+
+  return {total,blocks,hasHealthBase,hasPlan2,hasPlan3};
+}
 
 function updateCustomizer(){
   const providerKey=chooseCustomProvider();
@@ -4081,9 +4103,18 @@ const phone=document.getElementById("packagePhone").value.trim();
   msg.textContent="Listo. Guardamos tu combinación y tus datos para enviarte la cotización.";
 
   await funnelEvent("quote_submitted","","cta","Quiero recibir mi cotización","package_builder");
-  await funnelEvent("lead_submitted","","source","package_builder","package_builder");
-
-  track("package_quote_submit",{
+        await funnelEvent("lead_submitted","","source","package_builder","package_builder");
+        const conversionKey="salud2go_ga4_generate_lead_"+state.diagnosticId;
+        if(!safeSessionGet(conversionKey)){
+          safeSessionSet(conversionKey,"1");
+          track("generate_lead",{
+            lead_source:"package_builder",
+            currency:customState.currency||state.currency||"USD",
+            selected_plan:selectedPlanFromCustom(summary),
+            payment_frequency:typeof selectedPaymentFrequency!=="undefined"?selectedPaymentFrequency:"monthly"
+          });
+        }
+        track("package_quote_submit",{
     provider:summary.provider.name,
     start_plan:customState.startPlan,
     coverage_count:summary.labels.length,
@@ -4187,7 +4218,7 @@ async function submitLeadForm(formEl,messageEl){
      funnelEvent("lead_submitted","","source",formEl.classList.contains("modal-lead-form")?"modal":"page","lead_form");
      formEl.reset();
      showFormMessage(messageEl,"ok","¡Listo! Te contactaremos con novedades.");
-     track("generate_lead",{interest:data.interest||""});
+     track("waitlist_signup",{interest:data.interest||""});
    }
  }catch(err){
    showFormMessage(messageEl,"err","No pudimos registrar tus datos.");
@@ -4442,7 +4473,33 @@ document.addEventListener("DOMContentLoaded", function(){
 
 <a class="whatsapp-float" id="whatsappFloat" href="https://wa.me/525573099149?text=Hola%2C%20me%20interesa%20conocer%20m%C3%A1s%20sobre%20Salud%202%20Go%20y%20recibir%20informaci%C3%B3n%20sobre%20los%20planes." target="_blank" rel="noopener noreferrer" aria-label="Hablar con Salud 2 Go por WhatsApp"><span class="whatsapp-float-label">Habla con nosotros</span><svg viewBox="0 0 32 32" aria-hidden="true">
   <path fill="currentColor" d="M16 5.3c-5.9 0-10.7 4.7-10.7 10.5 0 2 .6 3.9 1.6 5.5L5.3 27l5.9-1.5c1.5.8 3.1 1.2 4.8 1.2 5.9 0 10.7-4.7 10.7-10.5S21.9 5.3 16 5.3zm0 19.3c-1.6 0-3.1-.4-4.4-1.2l-.3-.2-3.5.9.9-3.4-.2-.3a8.5 8.5 0 0 1-1.3-4.5c0-4.7 3.9-8.5 8.8-8.5s8.8 3.8 8.8 8.5-3.9 8.7-8.8 8.7zm4.8-6.4c-.3-.1-1.6-.8-1.8-.9-.2-.1-.4-.1-.6.1l-.8 1c-.1.2-.3.2-.6.1-1.5-.7-2.5-1.3-3.5-3-.2-.3 0-.5.1-.6l.6-.7c.1-.2.2-.3.3-.5.1-.2 0-.4 0-.5l-.8-1.9c-.2-.5-.4-.4-.6-.4h-.5c-.2 0-.5.1-.7.3-.2.3-.9.9-.9 2.2 0 1.3.9 2.5 1.1 2.7.1.2 1.9 2.9 4.6 4 .6.3 1.1.4 1.5.5.6.2 1.2.2 1.6.1.5-.1 1.6-.7 1.8-1.3.2-.6.2-1.1.2-1.2-.1-.1-.3-.2-.5-.3z"/>
-</svg></a><script id="v44-whatsapp-tracking">document.getElementById("whatsappFloat")?.addEventListener("click",function(){try{if(typeof track==="function")track("whatsapp_click",{placement:"floating_button",destination:"sales_chat"});}catch(_){}try{if(typeof funnelEvent==="function")funnelEvent("whatsapp_clicked","","cta","whatsapp","contact");}catch(_){}try{if(typeof gtag==="function")gtag("event","whatsapp_click",{event_category:"contact",event_label:"floating_whatsapp"});}catch(_){}});</script>
+</svg></a><script id="v13-whatsapp-conversion-tracking">
+document.getElementById("whatsappFloat")?.addEventListener("click",function(){
+  try{
+    if(typeof track==="function"){
+      track("whatsapp_click",{placement:"floating_button",destination:"sales_chat"});
+    }
+  }catch(_){}
+  try{
+    const conversionKey="salud2go_ga4_contact_whatsapp_"+SESSION_ID;
+    if(!safeSessionGet(conversionKey)){
+      safeSessionSet(conversionKey,"1");
+      if(typeof track==="function"){
+        track("contact",{
+          method:"whatsapp",
+          contact_source:"floating_button",
+          currency:state?.currency||"USD"
+        });
+      }
+    }
+  }catch(_){}
+  try{
+    if(typeof funnelEvent==="function"){
+      funnelEvent("whatsapp_clicked","","cta","whatsapp","contact");
+    }
+  }catch(_){}
+});
+</script>
 
 <script id="experiment-variant-ganga">
 document.addEventListener("DOMContentLoaded",function(){
