@@ -1805,6 +1805,82 @@ header .nav-actions .global-currency-btn{
 .what-you-said{margin:14px 0;padding:15px;border:1px solid var(--line);border-radius:16px;background:var(--cream)}.what-you-said-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}.what-you-said-grid>div{padding:10px 11px;border-radius:11px;background:var(--paper)}.what-you-said-grid span{display:block;font-size:8px;color:var(--muted);margin-bottom:3px}.what-you-said-grid strong{display:block;font-size:10px;line-height:1.35}
 @media(max-width:720px){.medical-cost-proof,.what-you-said-grid{grid-template-columns:1fr}.medical-cost-proof>div{min-width:0}}
 
+
+/* V16.1 — HERO FULL WIDTH */
+.hero{
+  padding-top:42px !important;
+  padding-bottom:72px !important;
+}
+.hero > .container{
+  width:min(calc(100% - 48px), 1540px) !important;
+  max-width:none !important;
+}
+.hero-grid{
+  display:grid !important;
+  grid-template-columns:1fr !important;
+  gap:32px !important;
+  align-items:start !important;
+}
+.hero-copy{
+  width:100% !important;
+  max-width:none !important;
+  min-height:0 !important;
+  padding:44px 52px 40px !important;
+  border-radius:28px !important;
+  justify-content:flex-start !important;
+}
+.hero-copy h1{
+  max-width:1320px !important;
+  font-size:clamp(54px,5vw,82px) !important;
+  line-height:.98 !important;
+  margin:10px 0 20px !important;
+  text-wrap:balance;
+}
+.hero-copy .lead{
+  max-width:1040px !important;
+  font-size:19px !important;
+  line-height:1.55 !important;
+}
+.medical-cost-proof{
+  width:100% !important;
+  max-width:1120px !important;
+  grid-template-columns:220px 1fr !important;
+  margin-top:22px !important;
+}
+.hero-actions{
+  margin-top:24px !important;
+}
+.hero-proof{
+  margin-top:20px !important;
+}
+.hero-disclaimer{
+  max-width:1100px !important;
+}
+.builder.typeform-builder{
+  width:100% !important;
+  max-width:none !important;
+}
+.typeform-shell{
+  min-height:650px !important;
+}
+@media(max-width:820px){
+  .hero > .container{
+    width:min(calc(100% - 24px), 1540px) !important;
+  }
+  .hero-copy{
+    padding:30px 24px 28px !important;
+  }
+  .hero-copy h1{
+    font-size:clamp(42px,12vw,64px) !important;
+  }
+  .hero-copy .lead{
+    font-size:16px !important;
+  }
+  .medical-cost-proof{
+    grid-template-columns:1fr !important;
+  }
+}
+
 </style>
 
 <!--
