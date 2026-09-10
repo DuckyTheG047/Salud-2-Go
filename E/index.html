@@ -1881,6 +1881,29 @@ header .nav-actions .global-currency-btn{
   }
 }
 
+
+/* V17 product-validation UX */
+.hero{padding:34px 0 70px!important}.hero>.container{width:min(calc(100% - 48px),1540px)!important;max-width:none!important}.hero-grid{grid-template-columns:1fr!important;gap:28px!important}.hero-copy{min-height:0!important;width:100%!important;max-width:none!important;padding:54px 60px 48px!important;border-radius:30px!important;background:linear-gradient(112deg,#fff 0%,#fff 56%,#eaf8f6 100%)!important}.hero-copy h1{max-width:1180px!important;font-size:clamp(54px,5.3vw,86px)!important;line-height:.98!important;letter-spacing:-.055em!important;margin:12px 0 22px!important;text-wrap:balance}.hero-copy .lead{max-width:930px!important;font-size:20px!important;line-height:1.5!important}.hero-actions{margin-top:28px!important}.hero-proof{margin-top:22px!important}.builder.typeform-builder{width:100%!important;max-width:none!important}.typeform-shell{min-height:650px!important}.product-promise{display:flex;gap:10px;flex-wrap:wrap;margin-top:24px}.product-promise span{padding:10px 13px;border-radius:999px;background:#fff;border:1px solid var(--line);font-size:11px;font-weight:800;color:var(--plum-dark)}.problem-strip{margin-top:22px;padding:18px 20px;border-radius:18px;background:#fff8f2;border:1px solid #ecdcd1;max-width:1050px}.problem-strip strong{display:block;font-size:14px;margin-bottom:5px;color:var(--ink)}.problem-strip p{margin:0!important;font-size:13px!important;line-height:1.55!important;color:var(--muted)!important}.purchase-intent{margin-top:16px;padding:16px;border:1px solid var(--line);border-radius:16px;background:#fff}.purchase-intent-title{font-size:11px;font-weight:900;margin-bottom:10px}.purchase-intent-options{display:grid;grid-template-columns:1fr 1fr;gap:8px}.intent-btn{border:1px solid var(--line);background:#fff;border-radius:12px;padding:12px;font-weight:800;cursor:pointer}.intent-btn.primary-intent,.intent-btn.selected{background:var(--plum);color:#fff;border-color:var(--plum)}.feedback-box{margin-top:12px}.feedback-box label{display:block;font-size:10px;font-weight:800;margin-bottom:6px}.feedback-box textarea{width:100%;min-height:84px;border:1px solid var(--line);border-radius:12px;padding:12px;font:inherit;resize:vertical}.feedback-save{margin-top:8px;border:0;border-radius:10px;background:var(--teal);color:#fff;padding:10px 14px;font-weight:800;cursor:pointer}@media(max-width:820px){.hero>.container{width:calc(100% - 24px)!important}.hero-copy{padding:34px 24px 30px!important}.hero-copy h1{font-size:clamp(42px,12vw,62px)!important}.hero-copy .lead{font-size:16px!important}.purchase-intent-options{grid-template-columns:1fr}}
+/* V18 value-before-lead */
+.recommendation-teaser{max-width:860px}.teaser-kicker{font-size:11px;font-weight:900;letter-spacing:.09em;text-transform:uppercase;color:var(--plum);margin-bottom:8px}.teaser-priorities{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:22px 0}.teaser-priority{padding:14px 15px;border:1px solid var(--line);border-radius:14px;background:#fff;display:flex;gap:9px;align-items:flex-start;font-size:11px;font-weight:800;line-height:1.35}.teaser-priority b{color:var(--teal);font-size:14px}.teaser-plan{padding:18px 20px;border-radius:17px;background:linear-gradient(135deg,var(--cream),#fff);border:1px solid var(--line);margin-top:12px}.teaser-plan span{display:block;font-size:9px;text-transform:uppercase;letter-spacing:.08em;font-weight:900;color:var(--plum)}.teaser-plan strong{display:block;font-size:22px;margin:5px 0}.teaser-plan small{display:block;font-size:11px;line-height:1.5;color:var(--muted)}.teaser-lock{display:flex;gap:11px;align-items:center;margin-top:14px;padding:13px 15px;border-radius:13px;background:#eef8f6}.teaser-lock>span{width:27px;height:27px;border-radius:50%;display:grid;place-items:center;background:var(--teal);color:#fff;font-weight:900}.teaser-lock strong,.teaser-lock small{display:block}.teaser-lock strong{font-size:10px}.teaser-lock small{font-size:9px;color:var(--muted);margin-top:2px}@media(max-width:760px){.teaser-priorities{grid-template-columns:1fr}}
+/* V18.1 — contact step submit fix */
+.typeform-shell:has(.type-step[data-step="8"].active) .typeform-nav{
+  display:flex!important;
+}
+.typeform-shell:has(.type-step[data-step="8"].active) .type-next{
+  display:inline-flex!important;
+  min-width:260px;
+  justify-content:center;
+  background:var(--plum)!important;
+  color:#fff!important;
+}
+.typeform-shell:has(.type-step[data-step="8"].active) .type-next:not(:disabled){
+  opacity:1!important;
+}
+.typeform-shell:has(.type-step[data-step="8"].active) .type-next:disabled{
+  opacity:.35!important;
+}
+
 </style>
 
 <!--
@@ -2678,7 +2701,7 @@ footer{
 
 
 <style id="payment-frequency-v6-styles">
-.typeform-shell:has(.type-step[data-step="8"].active) .typeform-nav{
+.typeform-shell:has(.type-step[data-step="9"].active) .typeform-nav{
   display:none!important;
 }
 .payment-frequency-block{
@@ -2803,7 +2826,7 @@ src="https://www.facebook.com/tr?id=1940496033540637&ev=PageView&noscript=1"
 
 
 
-<div class="announcement"><div class="container">Estamos explorando una nueva solución de protección para familias transfronterizas. <a href="#lista-espera" data-track="announcement_waitlist">Participa en el lanzamiento</a></div></div>
+<div class="announcement"><div class="container">Salud y asistencia para tu familia en México. <a href="#diagnostico" data-track="announcement_quote">Encuentra tu opción</a></div></div>
 
 <header>
 <div class="container nav">
@@ -2831,13 +2854,13 @@ src="https://www.facebook.com/tr?id=1940496033540637&ev=PageView&noscript=1"
 <div class="container">
 <div class="hero-grid">
   <article class="hero-copy">
-    <div class="eyebrow">Atención médica para tu familia en México</div>
+    <div class="eyebrow">Salud y asistencia para tu familia en México</div>
     <h1>Cuando tu familia necesita atención médica, el tiempo importa.</h1>
-    <p class="lead">Facilítales acceso a orientación médica, especialistas y apoyo en emergencias en México, sin recorridos innecesarios.</p>
-    <div class="medical-cost-proof"><div><span class="medical-cost-kicker">Lo que escuchamos en entrevistas</span><strong>$5,475 MXN</strong><small>gasto médico promedio reportado</small></div><p>Las familias entrevistadas reportaron gastos de <b>$1,200 a $11,900 MXN</b> cuando surge una necesidad médica. En algunos casos, además, enfrentan traslados de hasta 3 horas.</p></div>
-    <div class="hero-actions"><a class="btn btn-primary" href="#diagnostico" data-track="hero_builder">Quiero facilitarles atención</a><a class="btn btn-secondary" href="#opiniones" data-track="hero_reviews">Ver opiniones</a><button class="btn btn-secondary" data-modal="waitlist" data-track="hero_waitlist">Avísame cuando se lance</button></div>
-    <div class="hero-proof"><span><i class="proof-dot"></i> Atención médica cuando la necesitan</span><span><i class="proof-dot"></i> Acceso a especialistas</span><span><i class="proof-dot"></i> Apoyo en emergencias</span></div>
-    <p class="hero-disclaimer">Los costos mostrados provienen de cotizaciones mayoristas del benchmark. La fuente no confirma moneda, periodicidad ni unidad de cobro; por ello se presentan como unidades de referencia y no como precio comercial.</p>
+    <p class="lead">Ayúdales a acceder a orientación médica, especialistas y apoyo en emergencias en México, estés donde estés.</p>
+    <div class="product-promise"><span>Orientación médica</span><span>Especialistas</span><span>Emergencias</span><span>Seguimiento de salud</span></div>
+    <div class="problem-strip"><strong>Resolver una necesidad médica no debería implicar horas buscando opciones.</strong><p>Salud 2 Go reúne servicios de asistencia para facilitar el acceso de tu familia a la atención que necesita. También puedes sumar respaldo funerario y repatriación como beneficios adicionales.</p></div>
+    <div class="hero-actions"><a class="btn btn-primary" href="#diagnostico" data-track="hero_builder">Encuentra una opción para mi familia</a><a class="btn btn-secondary" href="#servicios" data-track="hero_services">Ver servicios</a></div>
+    <div class="hero-proof"><span><i class="proof-dot"></i> Configura según sus necesidades</span><span><i class="proof-dot"></i> Conoce tu recomendación</span><span><i class="proof-dot"></i> Revisa el precio antes de decidir</span></div>
   </article>
 
   <article class="builder typeform-builder" id="diagnostico">
@@ -2847,42 +2870,43 @@ src="https://www.facebook.com/tr?id=1940496033540637&ev=PageView&noscript=1"
 
     <div class="type-step active" data-step="1"><div class="type-content"><div class="type-number">1</div><div><h2>¿Dónde viven tú y tu familia?</h2><p>La ubicación nos ayuda a contrastar tu interés con la presencia de cada proveedor.</p><div class="type-options"><button type="button" class="type-option" data-field="residence" data-value="US"><span class="letter">A</span><strong>Vivo en Estados Unidos</strong></button><button type="button" class="type-option" data-field="residence" data-value="MX"><span class="letter">B</span><strong>Vivo en México</strong></button></div><div class="type-fields two"><label><span>Tu estado</span><select id="residenceState"><option value="">Primero selecciona tu país</option></select></label><label><span>Estado de tu familia</span><select id="familyState"><option value="">Selecciona</option><option>Aguascalientes</option><option>Baja California</option><option>Baja California Sur</option><option>Campeche</option><option>Chiapas</option><option>Chihuahua</option><option>Ciudad de México</option><option>Coahuila</option><option>Colima</option><option>Durango</option><option>Estado de México</option><option>Guanajuato</option><option>Guerrero</option><option>Hidalgo</option><option>Jalisco</option><option>Michoacán</option><option>Morelos</option><option>Nayarit</option><option>Nuevo León</option><option>Oaxaca</option><option>Puebla</option><option>Querétaro</option><option>Quintana Roo</option><option>San Luis Potosí</option><option>Sinaloa</option><option>Sonora</option><option>Tabasco</option><option>Tamaulipas</option><option>Tlaxcala</option><option>Veracruz</option><option>Yucatán</option><option>Zacatecas</option></select></label></div></div></div></div>
 
-    <div class="type-step" data-step="2"><div class="type-content"><div class="type-number">2</div><div><h2>¿Cuántas personas quieres proteger?</h2><p>Incluye a todas las personas que dependen de tu apoyo.</p><div class="type-slider"><div class="slider-value"><span id="peopleValue">3</span> personas</div><input id="peopleRange" type="range" min="1" max="6" value="3"><div class="slider-labels"><span>1 persona</span><span>6 personas</span></div></div></div></div></div>
+    <div class="type-step" data-step="2"><div class="type-content"><div class="type-number">2</div><div><h2>¿A cuántas personas de tu familia quieres apoyar?</h2><p>Incluye a las personas para quienes te gustaría contar con este servicio.</p><div class="type-slider"><div class="slider-value"><span id="peopleValue">3</span> personas</div><input id="peopleRange" type="range" min="1" max="6" value="3"><div class="slider-labels"><span>1 persona</span><span>6 personas</span></div></div></div></div></div>
 
-    <div class="type-step" data-step="3"><div class="type-content"><div class="type-number">3</div><div><h2>¿Qué situaciones te preocupan más?</h2><p>Puedes seleccionar más de una opción.</p><div class="type-options multi-list">
-<button type="button" class="type-option multi" data-field="needs" data-value="family_medical"><span class="letter">A</span><strong>Mi familia necesita atención médica rápida</strong><small>Resolver una necesidad médica sin perder tiempo buscando opciones.</small></button>
-<button type="button" class="type-option multi" data-field="needs" data-value="specialist"><span class="letter">B</span><strong>Necesitan acceso a especialistas</strong><small>Encontrar atención especializada cerca de ellos.</small></button>
+    <div class="type-step" data-step="3"><div class="type-content"><div class="type-number">3</div><div><h2>¿Qué situaciones te gustaría ayudarles a resolver?</h2><p>Puedes seleccionar más de una opción.</p><div class="type-options multi-list">
+<button type="button" class="type-option multi" data-field="needs" data-value="family_medical"><span class="letter">A</span><strong>Atención médica cuando la necesiten</strong><small>Resolver una necesidad médica sin perder tiempo buscando opciones.</small></button>
+<button type="button" class="type-option multi" data-field="needs" data-value="specialist"><span class="letter">B</span><strong>Acceso a especialistas</strong><small>Encontrar atención especializada cerca de ellos.</small></button>
 <button type="button" class="type-option multi" data-field="needs" data-value="emergency"><span class="letter">C</span><strong>Emergencias o ambulancias</strong><small>Tener apoyo cuando una situación requiere atención inmediata.</small></button>
 <button type="button" class="type-option multi" data-field="needs" data-value="checkup"><span class="letter">D</span><strong>Seguimiento de enfermedades crónicas</strong><small>Dar continuidad a tratamientos y necesidades recurrentes.</small></button>
-<button type="button" class="type-option multi" data-field="needs" data-value="funeral"><span class="letter">E</span><strong>Gastos funerarios inesperados</strong><small>Contar con respaldo adicional ante una situación difícil.</small></button>
+<button type="button" class="type-option multi" data-field="needs" data-value="funeral"><span class="letter">E</span><strong>Respaldo ante gastos funerarios</strong><small>Contar con respaldo adicional ante una situación difícil.</small></button>
 <button type="button" class="type-option multi" data-field="needs" data-value="repatriation"><span class="letter">F</span><strong>Repatriación</strong><small>Apoyo para traslado de cuerpo o cenizas desde EE. UU.</small></button>
 </div></div></div></div>
 
-    <div class="type-step" data-step="4"><div class="type-content"><div class="type-number">4</div><div><h2>¿Qué es lo más importante para ti?</h2><p>Selecciona una prioridad principal.</p><div class="type-options">
-<button type="button" class="type-option multi single-choice" data-field="priorities" data-value="speed"><span class="letter">A</span><strong>Que mi familia reciba atención rápidamente</strong></button>
+    <div class="type-step" data-step="4"><div class="type-content"><div class="type-number">4</div><div><h2>¿Qué sería lo más importante para ti?</h2><p>Selecciona una prioridad principal.</p><div class="type-options">
+<button type="button" class="type-option multi single-choice" data-field="priorities" data-value="speed"><span class="letter">A</span><strong>Que reciban atención rápidamente</strong></button>
 <button type="button" class="type-option multi single-choice" data-field="priorities" data-value="specialists"><span class="letter">B</span><strong>Encontrar especialistas cerca de ellos</strong></button>
 <button type="button" class="type-option multi single-choice" data-field="priorities" data-value="travel"><span class="letter">C</span><strong>Evitar traslados innecesarios</strong></button>
 <button type="button" class="type-option multi single-choice" data-field="priorities" data-value="emergency"><span class="letter">D</span><strong>Tener apoyo en emergencias</strong></button>
-<button type="button" class="type-option multi single-choice" data-field="priorities" data-value="funeral_priority"><span class="letter">E</span><strong>Tener cobertura funeraria</strong></button>
+<button type="button" class="type-option multi single-choice" data-field="priorities" data-value="funeral_priority"><span class="letter">E</span><strong>Contar con respaldo funerario</strong></button>
 </div></div></div></div>
 
-    <div class="type-step" data-step="5"><div class="type-content"><div class="type-number">5</div><div><h2>Cuando surge una situación médica, ¿cuánto gastas normalmente?</h2><p>Piensa en consulta, medicamentos, estudios o traslados relacionados.</p><div class="type-options">
+    <div class="type-step" data-step="5"><div class="type-content"><div class="type-number">5</div><div><h2>Cuando tu familia necesita atención médica, ¿cuánto sueles gastar?</h2><p>Considera consulta, medicamentos, estudios y traslados relacionados.</p><div class="type-options">
 <button type="button" class="type-option" data-field="medicalSpend" data-value="lt1000"><span class="letter">A</span><strong>Menos de $1,000 MXN</strong></button>
 <button type="button" class="type-option" data-field="medicalSpend" data-value="1000_3000"><span class="letter">B</span><strong>$1,000 a $3,000 MXN</strong></button>
 <button type="button" class="type-option" data-field="medicalSpend" data-value="3000_5000"><span class="letter">C</span><strong>$3,000 a $5,000 MXN</strong></button>
 <button type="button" class="type-option" data-field="medicalSpend" data-value="gt5000"><span class="letter">D</span><strong>Más de $5,000 MXN</strong></button>
 </div></div></div></div>
 
-    <div class="type-step" data-step="6"><div class="type-content"><div class="type-number">6</div><div><h2>Si pudieras reducir parte de esos gastos, ¿cuánto considerarías razonable pagar al mes?</h2><p>Queremos conocer tu disposición de pago antes de mostrarte una recomendación.</p><div class="type-options">
+    <div class="type-step" data-step="6"><div class="type-content"><div class="type-number">6</div><div><h2>¿Cuánto considerarías razonable pagar al mes por un servicio como este para tu familia?</h2><p>Selecciona el rango que te parecería razonable. Después conocerás el precio de tu recomendación.</p><div class="type-options">
 <button type="button" class="type-option" data-field="wtp" data-value="lt100"><span class="letter">A</span><strong>Menos de $100 MXN</strong></button>
 <button type="button" class="type-option" data-field="wtp" data-value="100_149"><span class="letter">B</span><strong>$100 a $149 MXN</strong></button>
 <button type="button" class="type-option" data-field="wtp" data-value="150_199"><span class="letter">C</span><strong>$150 a $199 MXN</strong></button>
 <button type="button" class="type-option" data-field="wtp" data-value="gt200"><span class="letter">D</span><strong>Más de $200 MXN</strong></button>
 </div></div></div></div>
 
-    <div class="type-step" data-step="7"><div class="type-content"><div class="type-number">7</div><div><h2>¿A dónde te enviamos tu cotización?</h2><p>Usaremos estos datos para mostrarte y guardar tu propuesta. No necesitas volver a llenar otro formulario.</p><div class="contact-fields"><label><span>Celular</span><input id="diagnosticPhone" type="tel" inputmode="tel" autocomplete="tel" placeholder="+1 o +52"></label><label><span>Correo electrónico</span><input id="diagnosticEmail" type="email" autocomplete="email" placeholder="nombre@correo.com"></label></div><label class="diag-consent"><input id="diagnosticConsent" type="checkbox"><span>Acepto recibir información del lanzamiento y que mi selección se utilice para generar esta cotización.</span></label></div></div></div>
+    <div class="type-step" data-step="7"><div class="type-content"><div class="type-number">7</div><div class="recommendation-teaser"><div class="teaser-kicker">Tu recomendación está lista</div><h2>Tenemos una opción que hace sentido para tu familia</h2><p>Con base en lo que seleccionaste, estos son los aspectos que deberíamos priorizar:</p><div class="teaser-priorities" id="teaserPriorities"></div><div class="teaser-plan"><span>Tu recomendación</span><strong id="teaserPlanName">Salud Ampliada</strong><small id="teaserPlanText">Una alternativa enfocada en las necesidades médicas que más te importan.</small></div><div class="teaser-lock"><span>✓</span><div><strong>Ya encontramos una opción para ti.</strong><small>Continúa para conocer qué incluye y su precio.</small></div></div></div></div></div>
+<div class="type-step" data-step="8"><div class="type-content"><div class="type-number">8</div><div><h2>¿Dónde quieres recibir los detalles de tu recomendación?</h2><p>Déjanos tus datos para mostrarte el precio, los beneficios incluidos y guardar tu recomendación.</p><div class="contact-fields"><label><span>Celular</span><input id="diagnosticPhone" type="tel" inputmode="tel" autocomplete="tel" placeholder="+1 o +52"></label><label><span>Correo electrónico</span><input id="diagnosticEmail" type="email" autocomplete="email" placeholder="nombre@correo.com"></label></div><label class="diag-consent"><input id="diagnosticConsent" type="checkbox"><span>Acepto recibir mi recomendación e información relacionada con Salud 2 Go.</span></label></div></div></div>
 
-    <div class="type-step" data-step="8"><div class="builder-result quotation-result"><div class="result-topline"><div><div class="result-kicker">Tu recomendación</div><h3 id="resultTitle">Protección familiar personalizada</h3></div><div class="currency-toggle" aria-label="Moneda"><button class="currency-btn active" data-currency="USD">USD</button><button class="currency-btn" data-currency="MXN">MXN</button></div></div><p id="resultText">Una combinación creada a partir de tus necesidades.</p><div class="what-you-said"><div class="result-kicker">Lo que nos dijiste</div><div class="what-you-said-grid"><div><span>Tu familia vive en</span><strong id="resultFamilyState">—</strong></div><div><span>Personas a apoyar</span><strong id="resultPeopleSummary">—</strong></div><div><span>Tu prioridad</span><strong id="resultPriority">—</strong></div><div><span>Gasto médico habitual</span><strong id="resultMedicalSpend">—</strong></div></div></div><div class="result-metrics"><div class="metric"><small>Personas</small><strong id="resultPeople">3</strong></div><div class="metric provider-public-hidden" aria-hidden="true"><small>Proveedor sugerido</small><strong id="resultProvider">—</strong></div><div class="metric"><small>Plan</small><strong id="resultPlan">Plan 1</strong></div></div><div class="selected-services" id="resultServices"></div>
+    <div class="type-step" data-step="9"><div class="builder-result quotation-result"><div class="result-topline"><div><div class="result-kicker">Tu recomendación</div><h3 id="resultTitle">Protección familiar personalizada</h3></div><div class="currency-toggle" aria-label="Moneda"><button class="currency-btn active" data-currency="USD">USD</button><button class="currency-btn" data-currency="MXN">MXN</button></div></div><p id="resultText">Una combinación creada a partir de tus necesidades.</p><div class="what-you-said"><div class="result-kicker">Lo que nos dijiste</div><div class="what-you-said-grid"><div><span>Tu familia vive en</span><strong id="resultFamilyState">—</strong></div><div><span>Personas a apoyar</span><strong id="resultPeopleSummary">—</strong></div><div><span>Tu prioridad</span><strong id="resultPriority">—</strong></div><div><span>Gasto médico habitual</span><strong id="resultMedicalSpend">—</strong></div></div></div><div class="result-metrics"><div class="metric"><small>Personas</small><strong id="resultPeople">3</strong></div><div class="metric provider-public-hidden" aria-hidden="true"><small>Proveedor sugerido</small><strong id="resultProvider">—</strong></div><div class="metric"><small>Plan</small><strong id="resultPlan">Plan 1</strong></div></div><div class="selected-services" id="resultServices"></div>
 <div class="payment-frequency-block" id="paymentFrequencyBlock">
   <div class="payment-frequency-label">¿Cómo prefieres pagar?</div>
   <div class="payment-frequency-options" role="group" aria-label="Frecuencia de pago">
@@ -2900,7 +2924,7 @@ src="https://www.facebook.com/tr?id=1940496033540637&ev=PageView&noscript=1"
     </button>
   </div>
 </div>
-<div class="price-box quote-price"><small id="resultPriceLabel">Precio estimado de tu selección</small><strong id="resultPrice">$0.00 USD</strong><p id="resultPriceNote">Precio mensual estimado según tu selección.</p></div><div class="explain-grid" id="alternativeCards"></div><div id="scoreExplanation"></div><div class="result-actions"><button class="btn btn-primary" data-modal="waitlist">Quiero recibir novedades</button><button class="btn btn-secondary" id="restartDiagnosis" type="button">Hacer otra cotización</button></div></div></div>
+<div class="price-box quote-price"><small id="resultPriceLabel">Precio de tu recomendación</small><strong id="resultPrice">$0.00 USD</strong><p id="resultPriceNote">Precio mensual del escenario mostrado.</p></div><div class="explain-grid" id="alternativeCards"></div><div id="scoreExplanation"></div><div class="purchase-intent"><div class="purchase-intent-title">Ahora que conoces el precio, ¿qué harías?</div><div class="purchase-intent-options"><button type="button" class="intent-btn primary-intent" data-intent="contratar">Lo contrataría</button><button type="button" class="intent-btn" data-intent="mas_info">Quiero conocer más</button><button type="button" class="intent-btn" data-intent="comparar">Lo compararía con otras opciones</button><button type="button" class="intent-btn" data-intent="no_contratar">No lo contrataría</button></div><div class="feedback-box"><label for="resultFeedback">¿Qué te haría decidirte o qué cambiarías?</label><textarea id="resultFeedback" placeholder="Cuéntanos brevemente qué te gustó, qué te faltó o qué te genera dudas."></textarea><button type="button" class="feedback-save" id="saveFeedback">Enviar opinión</button></div></div><div class="result-actions"><button class="btn btn-primary" data-modal="waitlist">Quiero recibir información</button><button class="btn btn-secondary" id="restartDiagnosis" type="button">Volver a empezar</button></div></div></div>
 
     <div class="typeform-nav"><button type="button" class="type-back" id="backBtn" type="button">← Atrás</button><button type="button" class="type-next" id="nextBtn" type="button" disabled>Continuar</button></div>
   </div>
@@ -2916,7 +2940,7 @@ src="https://www.facebook.com/tr?id=1940496033540637&ev=PageView&noscript=1"
     <div class="editorial-intro">
       <div>
         <div class="eyebrow">Servicios y costos</div>
-        <h2>Tres niveles de protección. Tú decides hasta dónde llegar.</h2>
+        <h2>Tres niveles de asistencia. Elige lo que tu familia necesita.</h2>
       </div>
       <p>Compara qué incluye cada nivel de protección y usa el diagnóstico para encontrar una combinación cercana a lo que necesitas.</p>
     </div>
@@ -3365,11 +3389,11 @@ const PROVIDERS={
   TAssist:{name:"T-Assist",networkMin:1,networkMax:42,medical:"Alta",funeral:true,repatriation:true,note:"Costo competitivo; red reportada limitada.",prices:{plan1:{inclusion:.75,voluntary:1.90},plan2:{inclusion:1.10,voluntary:2.45},plan3:{inclusion:.30,voluntary:.50}}}
 };
 
-const SERVICE_LABELS={telemedicine:"Telemedicina",family_medical:"Atención familiar",checkup:"Check-up",specialist:"Acceso a especialistas",emergency:"Emergencias o ambulancias",funeral:"Funeraria",repatriation:"Repatriación"};
+const SERVICE_LABELS={telemedicine:"Orientación médica",family_medical:"Atención médica",checkup:"Seguimiento de salud",specialist:"Acceso a especialistas",emergency:"Emergencias o ambulancias",funeral:"Respaldo funerario",repatriation:"Repatriación"};
 const APP_FLOW_VERSION="v15";
 const rawSavedDiagnosis=JSON.parse(safeStorageGet("cross_border_diagnosis")||"null");
 const savedDiagnosis=rawSavedDiagnosis?.flowVersion===APP_FLOW_VERSION?rawSavedDiagnosis:null;
-const state={consent:"accepted",diagnosticId:savedDiagnosis?.diagnosticId||crypto.randomUUID(),step:savedDiagnosis?.step||1,quiz:savedDiagnosis?.quiz||{residence:null,residenceState:"",familyState:"",people:3,needs:[],priorities:[],channels:[],medicalSpend:null,wtp:null,mode:"inclusion",plan:null},diagnosticLead:savedDiagnosis?.diagnosticLead||{phone:"",email:"",consent:false},recommendation:savedDiagnosis?.recommendation||null,priceReaction:savedDiagnosis?.priceReaction||null,currency:savedDiagnosis?.currency||"USD",tablePlan:"plan1",tableMode:"inclusion",mapProvider:"Anemex"};
+const state={consent:"accepted",diagnosticId:savedDiagnosis?.diagnosticId||crypto.randomUUID(),step:savedDiagnosis?.step||1,quiz:savedDiagnosis?.quiz||{residence:null,residenceState:"",familyState:"",people:3,needs:[],priorities:[],channels:[],medicalSpend:null,wtp:null,mode:"inclusion",plan:null},diagnosticLead:savedDiagnosis?.diagnosticLead||{phone:"",email:"",consent:false},recommendation:savedDiagnosis?.recommendation||null,priceReaction:savedDiagnosis?.priceReaction||null,purchaseIntent:savedDiagnosis?.purchaseIntent||null,resultFeedback:savedDiagnosis?.resultFeedback||"",currency:savedDiagnosis?.currency||"USD",tablePlan:"plan1",tableMode:"inclusion",mapProvider:"Anemex"};
 const FX_MXN_PER_USD=18; let selectedPaymentFrequency="monthly";
 
 if(!state.quiz.plan) state.quiz.plan = null;
@@ -3378,7 +3402,7 @@ if(!Array.isArray(state.quiz.plans)){
 }
 state.quiz.mode = "inclusion";
 
-function persistDiagnosis(){safeStorageSet("cross_border_diagnosis",JSON.stringify({flowVersion:APP_FLOW_VERSION,diagnosticId:state.diagnosticId,step:state.step,quiz:state.quiz,diagnosticLead:state.diagnosticLead,recommendation:state.recommendation,priceReaction:state.priceReaction,currency:state.currency}))}
+function persistDiagnosis(){safeStorageSet("cross_border_diagnosis",JSON.stringify({flowVersion:APP_FLOW_VERSION,diagnosticId:state.diagnosticId,step:state.step,quiz:state.quiz,diagnosticLead:state.diagnosticLead,recommendation:state.recommendation,priceReaction:state.priceReaction,purchaseIntent:state.purchaseIntent||null,resultFeedback:state.resultFeedback||"",currency:state.currency}))}
 
 const quoteDateEl=document.getElementById("quoteDate");if(quoteDateEl)quoteDateEl.textContent=new Intl.DateTimeFormat("es-MX",{day:"2-digit",month:"short",year:"numeric"}).format(new Date());
 window.dataLayer=window.dataLayer||[];
@@ -3614,7 +3638,8 @@ function currentComplete(){
   if(state.step===4)return state.quiz.priorities.length>0;
   if(state.step===5)return !!state.quiz.medicalSpend;
   if(state.step===6)return !!state.quiz.wtp;
-  if(state.step===7){
+  if(state.step===7)return true;
+  if(state.step===8){
     const phone=(document.getElementById("diagnosticPhone")?.value||"").trim();
     const email=(document.getElementById("diagnosticEmail")?.value||"").trim();
     return phone.length>=7 &&
@@ -3627,37 +3652,39 @@ function currentComplete(){
 function renderStep(){
   /* Never allow a nonexistent step such as 9 */
   if(state.step<1)state.step=1;
-  if(state.step>8)state.step=8;
+  if(state.step>9)state.step=9;
 
   steps.forEach(s=>{
     s.classList.toggle("active",Number(s.dataset.step)===state.step);
   });
 
   document.getElementById("progressLabel").textContent=
-    state.step===8 ? "Cotización" : `${state.step} de 7`;
+    state.step===9 ? "Recomendación" : `${state.step} de 8`;
 
   document.getElementById("progressBar").style.width=
-    state.step===8 ? "100%" : `${state.step*(100/7)}%`;
+    state.step===9 ? "100%" : `${state.step*(100/8)}%`;
 
   backBtn.style.visibility=
-    state.step===1||state.step===8 ? "hidden" : "visible";
+    state.step===1||state.step===9 ? "hidden" : "visible";
 
   nextBtn.style.display=
-    state.step===8 ? "none" : "inline-flex";
+    state.step===9 ? "none" : "inline-flex";
 
   nextBtn.textContent=
-    state.step===7 ? "Quiero ver mi cotización" : "Continuar";
+    state.step===7 ? "Ver qué incluye y conocer el precio" : state.step===8 ? "Enviar y ver mi recomendación" : "Continuar";
 
   nextBtn.disabled=!currentComplete();
 
   if(state.step===6)updatePlanHint();
 
-  if(state.step===8){
+  if(state.step===7)renderTeaserV18();
+
+  if(state.step===9){
     renderResult();
   }
 
   track("builder_step_view",{step:state.step});
-  if(state.step<=7){
+  if(state.step<=8){
     funnelEvent("diagnostic_step_viewed",state.step,"","","diagnostic");
   }
 }
@@ -3721,8 +3748,8 @@ nextBtn.onclick=async()=>{
   if(!currentComplete())return;
 
   /* Guard against repeated clicks / stale state */
-  if(state.step>=8){
-    state.step=8;
+  if(state.step>=9){
+    state.step=9;
     persistDiagnosis();
     renderStep();
     return;
@@ -3730,10 +3757,10 @@ nextBtn.onclick=async()=>{
 
   nextBtn.disabled=true;
 
-  if(state.step===7){
+  if(state.step===8){
       track("diagnostic_contact_complete",{has_phone:true,has_email:true});
       ensureLeadId();
-      funnelEvent("diagnostic_completed",7,"contact","completed","diagnostic");
+      funnelEvent("diagnostic_completed",8,"contact","completed","diagnostic");
       const conversionKey="salud2go_ga4_generate_lead_"+state.diagnosticId;
       if(!safeSessionGet(conversionKey)){
         safeSessionSet(conversionKey,"1");
@@ -3748,7 +3775,7 @@ nextBtn.onclick=async()=>{
 
   track("builder_step_complete",{step:state.step});
 
-  state.step=Math.min(8,state.step+1);
+  state.step=Math.min(9,state.step+1);
   persistDiagnosis();
   renderStep();
 };
@@ -3767,8 +3794,9 @@ const PLAN_LABELS={
 };
 
 function planFromNeeds(needs){
-  if(needs.includes("funeral")||needs.includes("repatriation"))return "plan3";
   if(needs.includes("specialist")||needs.includes("emergency"))return "plan2";
+  if(needs.some(n=>["family_medical","checkup"].includes(n)))return "plan1";
+  if(needs.includes("funeral")||needs.includes("repatriation"))return "plan3";
   return "plan1";
 }
 
@@ -3833,9 +3861,9 @@ const pricing={total:selectedCommercialPrices.length
   const planDisplay=selectedPlans.map(p=>PLAN_LABELS[p]).join(" + ");
 
   document.getElementById("resultTitle").textContent=
-  selectedPlans.length>1 ? "Protección familiar personalizada" : (title||"Protección familiar personalizada");
+  selectedPlans.length>1 ? "Una opción pensada para tu familia" : (title||"Una opción pensada para tu familia");
   document.getElementById("resultText").textContent=
-    `La recomendación considera tus necesidades, tu prioridad, ubicación y contexto de gasto médico. Coincidencia estimada: ${recommended.total}%.`;
+    `Esta recomendación prioriza las necesidades que seleccionaste para tu familia.`;
 
   document.getElementById("resultPeople").textContent=q.people;
   const priorityLabelsV16={speed:"Atención rápida",specialists:"Especialistas cerca de ellos",travel:"Evitar traslados innecesarios",emergency:"Apoyo en emergencias",funeral_priority:"Cobertura funeraria"};
@@ -3857,7 +3885,7 @@ const paymentMultipliers={weekly:.25,monthly:1,semiannual:6,annual:12};
 const paymentLabels={weekly:"Precio semanal estimado",monthly:"Precio mensual estimado",semiannual:"Precio semestral estimado",annual:"Precio anual estimado"};
 const paymentNotes={
   weekly:"Equivale al precio mensual dividido entre 4 semanas.",
-  monthly:"Precio mensual estimado según tu selección.",
+  monthly:"Precio mensual del escenario mostrado.",
   semiannual:"Equivale a 6 meses del precio mensual estimado.",
   annual:"Equivale a 12 meses del precio mensual estimado."
 };
@@ -3882,7 +3910,7 @@ function updatePaymentFrequencyUI(){
   const result=document.getElementById("resultPrice");
   if(result)result.textContent=formatSelectedCurrency(prices[selectedPaymentFrequency]??prices.monthly);
   const label=document.getElementById("resultPriceLabel");
-  if(label)label.textContent=paymentLabels[selectedPaymentFrequency]||"Precio estimado de tu selección";
+  if(label)label.textContent=paymentLabels[selectedPaymentFrequency]||"Precio de tu recomendación";
   const note=document.getElementById("resultPriceNote");
   if(note)note.textContent=paymentNotes[selectedPaymentFrequency]||paymentNotes.monthly;
 }
@@ -4697,7 +4725,20 @@ document.addEventListener("click",function(e){
     }
   }
 });
-</script>
+
+document.addEventListener("click",function(e){
+  const intent=e.target.closest("[data-intent]");
+  if(intent){document.querySelectorAll("[data-intent]").forEach(x=>x.classList.remove("selected"));intent.classList.add("selected");state.purchaseIntent=intent.dataset.intent;persistDiagnosis();track("purchase_intent",{intent:state.purchaseIntent,wtp:state.quiz.wtp||""});funnelEvent("purchase_intent",8,"intent",state.purchaseIntent,"diagnostic");}
+});
+document.getElementById("saveFeedback")?.addEventListener("click",function(){const text=(document.getElementById("resultFeedback")?.value||"").trim();if(!text)return;state.resultFeedback=text;persistDiagnosis();track("result_feedback",{feedback_length:text.length,intent:state.purchaseIntent||""});this.textContent="Opinión enviada";this.disabled=true;});
+function renderTeaserV18(){
+ const q=state.quiz||{},needs=Array.isArray(q.needs)?q.needs:[],priorities=Array.isArray(q.priorities)?q.priorities:[];
+ const labels={family_medical:"Atención médica cuando la necesiten",specialist:"Acceso a especialistas",emergency:"Apoyo ante emergencias",checkup:"Seguimiento de salud",funeral:"Respaldo funerario",repatriation:"Repatriación",speed:"Atención rápida",specialists:"Especialistas cerca de tu familia",travel:"Evitar traslados innecesarios",funeral_priority:"Respaldo funerario"};
+ const ordered=[...priorities,...needs].filter((v,i,a)=>a.indexOf(v)===i).slice(0,3);
+ const box=document.getElementById("teaserPriorities");if(box)box.innerHTML=(ordered.length?ordered:["family_medical","specialist","emergency"]).map(v=>`<div class="teaser-priority"><b>✓</b><span>${labels[v]||v}</span></div>`).join("");
+ const planId=planFromNeeds(needs),plan=PLANS?.[planId];const name=document.getElementById("teaserPlanName");if(name)name.textContent=(plan?.name||PLAN_LABELS[planId]||"Salud Ampliada").replace(/^Plan \d · /,"");
+ const text=document.getElementById("teaserPlanText");if(text)text.textContent=planId==="plan2"?"Una alternativa enfocada en facilitar atención médica, especialistas y apoyo cuando tu familia lo necesita.":planId==="plan3"?"Una alternativa con asistencia para tu familia y respaldo adicional ante situaciones difíciles.":"Una alternativa enfocada en facilitar el acceso de tu familia a servicios de salud y asistencia.";
+}</script>
 
 </body>
 </html>
