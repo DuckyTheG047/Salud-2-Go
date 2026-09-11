@@ -2993,6 +2993,13 @@ fbq('track', 'PageView');
 @media(max-width:640px){.quote-save-channel{grid-template-columns:1fr}.family-size-inline{margin-top:18px;padding-top:18px}}
 </style>
 
+
+<style id="v20-14-hide-package-summary">
+#personaliza .custom-summary-head{
+  display:none !important;
+}
+</style>
+
 </head>
 
 <body id="top" class="art-directed">
@@ -5443,8 +5450,9 @@ function restorePurchaseIntentV182(){
       precio_final:finalPrice(selected,freq,currency),
       moneda:currency,
       lead_guardado:hasLead?"Sí":"No",
-      tipo_contacto:contactType,
-      contacto:contact,
+      celular_cotizacion:(lead.phone||"").trim(),
+      correo_cotizacion:(lead.email||"").trim(),
+      consentimiento_cotizacion:hasLead?"Sí":"",
       que_harias:INTENT_LABELS_STUDY[state?.purchaseIntent]||state?.purchaseIntent||""
     };
   }
@@ -5531,8 +5539,485 @@ function restorePurchaseIntentV182(){
 
   // Expuesto sólo para pruebas manuales en consola si fuera necesario.
   window.__salud2goStudySnapshot=sendSnapshot;
+  window.__salud2goStudyBuildPayload=buildPayload;
 })();
 </script>
+
+
+
+<script id="v20-10-waitlist-sheet">
+(function(){
+  const STUDY_ENDPOINT="https://script.google.com/macros/s/AKfycbwz4TOll-T00NRKi2hOULoF2qVVMF1pgS2H7-dfh4pNSu92J6xtczMMqrrO2UJbQYRG/exec";
+  const COUNTRY_LABELS={US:"Estados Unidos",MX:"México",other:"Otro"};
+  const INTEREST_LABELS={
+    medical:"Atención médica",
+    expanded:"Especialista y ambulancia",
+    funeral:"Funeraria",
+    repatriation:"Repatriación",
+    custom:"Propuesta personalizada"
+  };
+
+  let currentWaitlistOrigin="";
+
+  function originFromTrigger(trigger){
+    if(!trigger)return "";
+    if(trigger.closest(".result-actions"))return "resultado";
+    if(trigger.closest(".mobile-cta"))return "mobile_cta";
+    return "modal_waitlist";
+  }
+
+  function basePayload(){
+    try{
+      if(typeof window.__salud2goStudyBuildPayload==="function"){
+        return window.__salud2goStudyBuildPayload();
+      }
+    }catch(_){}
+    return {session_id:SESSION_ID};
+  }
+
+  async function postStudy(payload){
+    await fetch(STUDY_ENDPOINT,{
+      method:"POST",
+      mode:"no-cors",
+      headers:{"Content-Type":"text/plain;charset=utf-8"},
+      body:JSON.stringify(payload),
+      keepalive:true
+    });
+  }
+
+  // Modal opener robusto.
+  document.addEventListener("click",function(e){
+    const trigger=e.target.closest('[data-modal="waitlist"]');
+    if(!trigger)return;
+
+    currentWaitlistOrigin=originFromTrigger(trigger);
+    e.preventDefault();
+    e.stopPropagation();
+    e.stopImmediatePropagation();
+
+    const modalEl=document.getElementById("modal");
+    const modalContentEl=document.getElementById("modalContent");
+    const templateEl=document.getElementById("waitlistTemplate");
+    if(!modalEl || !modalContentEl || !templateEl)return;
+
+    modalContentEl.innerHTML="";
+    modalContentEl.appendChild(templateEl.content.cloneNode(true));
+    modalEl.classList.add("open");
+    document.body.classList.add("modal-open");
+
+    try{
+      if(typeof track==="function"){
+        track("modal_open",{type:"waitlist",source:currentWaitlistOrigin});
+      }
+    }catch(_){}
+  },true);
+
+  // Guardado autoritativo de ambos formularios:
+  // 1) modal de resultado/mobile; 2) formulario visible "Conoce más".
+  document.addEventListener("submit",async function(e){
+    const formEl=e.target.closest(".modal-lead-form, #leadForm");
+    if(!formEl)return;
+
+    e.preventDefault();
+    e.stopPropagation();
+    e.stopImmediatePropagation();
+
+    const messageEl=formEl.querySelector(".modal-form-message, #formMessage, .message");
+    const fd=new FormData(formEl);
+
+    const name=String(fd.get("name")||"").trim();
+    const country=String(fd.get("country")||"").trim();
+    const email=String(fd.get("email")||"").trim();
+    const phone=String(fd.get("phone")||"").trim();
+    const interest=String(fd.get("interest")||"").trim();
+    const interview=formEl.querySelector('[name="interview"]')?.checked===true;
+    const consent=formEl.querySelector('[name="consent"]')?.checked===true;
+
+    function msg(type,text){
+      if(!messageEl)return;
+      messageEl.className="message "+type;
+      messageEl.textContent=text;
+    }
+
+    if(!email && !phone){
+      msg("err","Ingresa un correo o celular.");
+      return;
+    }
+    if(email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){
+      msg("err","Revisa el formato del correo.");
+      return;
+    }
+    if(!consent){
+      msg("err","Debes aceptar el aviso de privacidad.");
+      return;
+    }
+
+    const submit=formEl.querySelector('[type="submit"]');
+    const oldText=submit?.textContent||"";
+    if(submit){
+      submit.disabled=true;
+      submit.textContent="Registrando…";
+    }
+
+    const isModal=formEl.classList.contains("modal-lead-form");
+    const origin=isModal ? (currentWaitlistOrigin||"resultado") : "seccion_conoce_mas";
+
+    const payload={
+      ...basePayload(),
+      session_id:SESSION_ID,
+      waitlist_registrado:"Sí",
+      cta_origen:origin,
+      nombre_waitlist:name,
+      pais_waitlist:COUNTRY_LABELS[country]||country,
+      correo_waitlist:email,
+      celular_waitlist:phone,
+      interes_principal:INTEREST_LABELS[interest]||interest,
+      entrevista:interview?"Sí":"No",
+      consentimiento:"Sí"
+    };
+
+    try{
+      msg("ok","Guardando tus datos…");
+      await postStudy(payload);
+      msg("ok","¡Listo! Te contactaremos con novedades.");
+
+      try{
+        if(typeof funnelEvent==="function"){
+          funnelEvent("lead_submitted","","source",isModal?"modal":"page","lead_form");
+        }
+        if(typeof track==="function"){
+          track("waitlist_signup",{interest:interest||"",source:origin});
+        }
+      }catch(_){}
+
+      formEl.reset();
+    }catch(error){
+      console.error("[study-sheet] waitlist error",error);
+      msg("err","No pudimos registrar tus datos.");
+    }finally{
+      if(submit){
+        submit.disabled=false;
+        submit.textContent=oldText||"Unirme a la lista de espera";
+      }
+    }
+  },true);
+})();
+</script>
+
+
+<script id="v20-11-modal-close-fix">
+(function(){
+  function forceCloseModal(){
+    const modalEl=document.getElementById("modal");
+    if(!modalEl)return;
+    modalEl.classList.remove("open");
+    document.body.classList.remove("modal-open");
+  }
+
+  // Cierre autoritativo del modal, independiente de handlers previos.
+  document.addEventListener("click",function(e){
+    const closeBtn=e.target.closest("#modalClose, .modal-close");
+    const modalEl=document.getElementById("modal");
+
+    if(closeBtn){
+      e.preventDefault();
+      e.stopPropagation();
+      e.stopImmediatePropagation();
+      forceCloseModal();
+      return;
+    }
+
+    if(modalEl && e.target===modalEl){
+      forceCloseModal();
+    }
+  },true);
+
+  document.addEventListener("keydown",function(e){
+    if(e.key==="Escape")forceCloseModal();
+  },true);
+
+  window.__salud2goCloseModal=forceCloseModal;
+})();
+</script>
+
+
+<style id="v20-12-package-builder-fix-css">
+#personaliza,
+#personaliza .container,
+#personaliza .package-start,
+#personaliza .package-start-options,
+#personaliza .coverage-builder{
+  position:relative!important;
+  z-index:1!important;
+  pointer-events:auto!important;
+}
+#personaliza .package-start-btn,
+#personaliza [data-coverage],
+#personaliza .coverage-check,
+#personaliza [data-custom-currency],
+#personaliza #providerSelect{
+  pointer-events:auto!important;
+  cursor:pointer!important;
+}
+#personaliza .package-start-btn{
+  z-index:5!important;
+}
+</style>
+<script id="v20-12-package-builder-fix-js">
+(function(){
+  // Handler autoritativo para los tres planes del constructor.
+  document.addEventListener("click",function(e){
+    const currencyBtn=e.target.closest("#personaliza [data-custom-currency]");
+    if(currencyBtn){
+      e.preventDefault();
+      e.stopPropagation();
+      e.stopImmediatePropagation();
+      document.querySelectorAll("#personaliza [data-custom-currency]").forEach(function(btn){
+        btn.classList.toggle("active",btn===currencyBtn);
+      });
+      try{
+        if(typeof customState!=="undefined") customState.currency=currencyBtn.dataset.customCurrency;
+        if(typeof updateCustomizer==="function") updateCustomizer();
+      }catch(err){
+        console.warn("[package-builder] currency",err);
+      }
+    }
+  },true);
+
+  // Checkboxes: asegura interacción aunque otro listener falle.
+  document.addEventListener("change",function(e){
+    const input=e.target.closest("#personaliza [data-coverage]");
+    if(!input)return;
+    try{
+      const coverage=input.dataset.coverage;
+      input.closest(".coverage-check")?.classList.toggle("selected",input.checked);
+      if(typeof customState!=="undefined"){
+        if(input.checked) customState.selected.add(coverage);
+        else customState.selected.delete(coverage);
+      }
+      if(typeof updateCustomizer==="function") updateCustomizer();
+    }catch(err){
+      console.warn("[package-builder] coverage",err);
+    }
+  },true);
+})();
+</script>
+
+
+<script id="v20-13-plan-coverages-fix">
+(function(){
+  const PLAN_COVERAGES_V2013={
+    plan1:["telemedicine","digital_rx","pharmacy","urgent_care","mx_medical","psychology","nutrition","checkup"],
+    plan2:["telemedicine","digital_rx","pharmacy","urgent_care","mx_medical","psychology","nutrition","checkup","specialist","ambulance"],
+    plan3:["repatriation","funeral"]
+  };
+
+  document.addEventListener("click",function(e){
+    const btn=e.target.closest("#personaliza [data-start-plan]");
+    if(!btn)return;
+
+    e.preventDefault();
+    e.stopPropagation();
+    e.stopImmediatePropagation();
+
+    const plan=btn.dataset.startPlan;
+    const selected=new Set(PLAN_COVERAGES_V2013[plan]||[]);
+
+    // Estado activo del plan
+    document.querySelectorAll("#personaliza [data-start-plan]").forEach(function(b){
+      const active=b.dataset.startPlan===plan;
+      b.classList.toggle("active",active);
+      b.setAttribute("aria-pressed",active?"true":"false");
+    });
+
+    // Sincronización directa de coberturas
+    document.querySelectorAll("#personaliza [data-coverage]").forEach(function(input){
+      const checked=selected.has(input.dataset.coverage);
+      input.checked=checked;
+      input.closest(".coverage-check")?.classList.toggle("selected",checked);
+    });
+
+    // Sincroniza también el estado interno existente si está disponible.
+    try{
+      if(typeof customState!=="undefined"){
+        customState.startPlan=plan;
+        customState.selected.clear();
+        selected.forEach(function(c){customState.selected.add(c);});
+      }
+    }catch(err){
+      console.warn("[package-builder] customState sync",err);
+    }
+
+    // Recalcula precio/resumen, sin comprometer la selección visual.
+    try{
+      if(typeof updateCustomizer==="function")updateCustomizer();
+    }catch(err){
+      console.warn("[package-builder] updateCustomizer",err);
+    }
+  },true);
+})();
+</script>
+
+
+<script id="v20-15-quote-save-tracking">
+(function(){
+  const ENDPOINT="https://script.google.com/macros/s/AKfycbwz4TOll-T00NRKi2hOULoF2qVVMF1pgS2H7-dfh4pNSu92J6xtczMMqrrO2UJbQYRG/exec";
+
+  document.addEventListener("click",function(e){
+    const btn=e.target.closest("#saveQuoteContact");
+    if(!btn)return;
+
+    setTimeout(async function(){
+      try{
+        const lead=state?.diagnosticLead||{};
+        const phone=String(lead.phone||"").trim();
+        const email=String(lead.email||"").trim();
+        if(!phone && !email)return;
+
+        let payload={session_id:SESSION_ID};
+        if(typeof window.__salud2goStudyBuildPayload==="function"){
+          payload=window.__salud2goStudyBuildPayload();
+        }
+
+        payload.session_id=SESSION_ID;
+        payload.lead_guardado="Sí";
+        payload.celular_cotizacion=phone;
+        payload.correo_cotizacion=email;
+        payload.consentimiento_cotizacion="Sí";
+
+        await fetch(ENDPOINT,{
+          method:"POST",
+          mode:"no-cors",
+          headers:{"Content-Type":"text/plain;charset=utf-8"},
+          body:JSON.stringify(payload),
+          keepalive:true
+        });
+      }catch(err){
+        console.warn("[quote-sheet] error",err);
+      }
+    },300);
+  },true);
+})();
+</script>
+
+
+
+<script id="v20-17-package-quote-submit-fix">
+(function(){
+  const ENDPOINT="https://script.google.com/macros/s/AKfycbwz4TOll-T00NRKi2hOULoF2qVVMF1pgS2H7-dfh4pNSu92J6xtczMMqrrO2UJbQYRG/exec";
+
+  function selectedPlanFromBuilder(){
+    try{
+      if(typeof customState!=="undefined"){
+        const hasP3=["repatriation","funeral"].some(x=>customState.selected.has(x));
+        const hasP2=["specialist","ambulance"].some(x=>customState.selected.has(x));
+        if(hasP3 && !hasP2) return "plan3";
+        if(hasP2) return "plan2";
+        return "plan1";
+      }
+    }catch(_){
+      return "";
+    }
+    return "";
+  }
+
+  document.addEventListener("click",async function(e){
+    const btn=e.target.closest("#packageQuoteBtn");
+    if(!btn)return;
+
+    e.preventDefault();
+    e.stopPropagation();
+    e.stopImmediatePropagation();
+
+    const phone=document.getElementById("packagePhone")?.value.trim()||"";
+    const email=document.getElementById("packageEmail")?.value.trim()||"";
+    const consent=document.getElementById("packageConsent")?.checked===true;
+    const msg=document.getElementById("packageQuoteMessage");
+
+    const setMsg=(type,text)=>{
+      if(!msg)return;
+      msg.className="message "+type;
+      msg.textContent=text;
+    };
+
+    if(!phone || phone.length<7){
+      setMsg("err","Ingresa un celular válido.");
+      return;
+    }
+    if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){
+      setMsg("err","Ingresa un correo válido.");
+      return;
+    }
+    if(!consent){
+      setMsg("err","Acepta el consentimiento para continuar.");
+      return;
+    }
+
+    let payload={session_id:SESSION_ID};
+    try{
+      if(typeof window.__salud2goStudyBuildPayload==="function"){
+        payload=window.__salud2goStudyBuildPayload();
+      }
+    }catch(_){
+      payload={session_id:SESSION_ID};
+    }
+
+    const selectedPlan=selectedPlanFromBuilder();
+    const planLabels={
+      plan1:"Plan 1 · Salud esencial",
+      plan2:"Plan 2 · Salud ampliada",
+      plan3:"Plan 3 · Respaldo funerario y repatriación"
+    };
+
+    payload.session_id=SESSION_ID;
+    payload.lead_guardado="Sí";
+    payload.celular_cotizacion=phone;
+    payload.correo_cotizacion=email;
+    payload.consentimiento_cotizacion="Sí";
+
+    payload.celular_cta_recibir_cotizacion=phone;
+    payload.correo_cta_recibir_cotizacion=email;
+
+    if(selectedPlan){
+      payload.plan_seleccionado=planLabels[selectedPlan]||selectedPlan;
+    }
+
+    try{
+      btn.disabled=true;
+      setMsg("ok","Guardando tu cotización...");
+
+      await fetch(ENDPOINT,{
+        method:"POST",
+        mode:"no-cors",
+        headers:{"Content-Type":"text/plain;charset=utf-8"},
+        body:JSON.stringify(payload),
+        keepalive:true
+      });
+
+      setMsg("ok","Listo. Guardamos tu combinación y tus datos para enviarte la cotización.");
+
+      try{
+        if(typeof track==="function"){
+          track("package_quote_submit",{
+            source:"cta_recibir_cotizacion",
+            selected_plan:selectedPlan,
+            email:email?"yes":"no",
+            phone:phone?"yes":"no"
+          });
+        }
+      }catch(_){
+      }
+
+    }catch(err){
+      console.error("[package-quote] submit error",err);
+      setMsg("err","No pudimos guardar la cotización. Inténtalo nuevamente.");
+    }finally{
+      btn.disabled=false;
+    }
+  },true);
+})();
+</script>
+
 
 </body>
 </html>
