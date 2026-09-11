@@ -5298,5 +5298,241 @@ function restorePurchaseIntentV182(){
  window.selectComparePlan=selectComparePlan;
 })();
 </script>
+
+<script id="v20-5-study-sheet">
+/* =========================================================
+   V20.5 — Registro consolidado del estudio en Google Sheets
+   1 fila por session_id; el Apps Script hace upsert.
+   ========================================================= */
+(function(){
+  const STUDY_ENDPOINT="https://script.google.com/macros/s/AKfycbwz4TOll-T00NRKi2hOULoF2qVVMF1pgS2H7-dfh4pNSu92J6xtczMMqrrO2UJbQYRG/exec";
+
+  const NEED_LABELS={
+    family_medical:"Atención médica cuando la necesiten",
+    specialist:"Acceso a especialistas",
+    emergency:"Emergencias o ambulancias",
+    checkup:"Seguimiento de enfermedades crónicas",
+    funeral:"Respaldo ante gastos funerarios",
+    repatriation:"Repatriación"
+  };
+  const SPEND_LABELS={
+    lt1000:"Menos de $1,000 MXN",
+    "1000_3000":"$1,000 a $3,000 MXN",
+    "3000_5000":"$3,000 a $5,000 MXN",
+    gt5000:"Más de $5,000 MXN"
+  };
+  const WTP_LABELS={
+    lt100:"Menos de $100 MXN",
+    "100_149":"$100 a $149 MXN",
+    "150_199":"$150 a $199 MXN",
+    gt200:"Más de $200 MXN"
+  };
+  const PLAN_LABELS_STUDY={
+    plan1:"Plan 1 · Salud esencial",
+    plan2:"Plan 2 · Salud ampliada",
+    plan3:"Plan 3 · Respaldo funerario y repatriación"
+  };
+  const FREQ_LABELS_STUDY={
+    weekly:"Semanal",
+    monthly:"Mensual",
+    semiannual:"Semestral",
+    annual:"Anual"
+  };
+  const INTENT_LABELS_STUDY={
+    contratar:"Lo contrataría",
+    mas_info:"Quiero conocer más",
+    comparar:"Lo compararía con otras opciones",
+    no_contratar:"No lo contrataría"
+  };
+  const SCENARIO_LABELS={
+    control:"C",
+    alto:"E",
+    ganga:"G"
+  };
+  const PRICE_MAPS={
+    control:{
+      plan1:{USD:3.99,MXN:70},
+      plan2:{USD:7.99,MXN:140},
+      plan3:{USD:11.99,MXN:215}
+    },
+    alto:{
+      plan1:{USD:5.99,MXN:110},
+      plan2:{USD:7.99,MXN:145},
+      plan3:{USD:9.99,MXN:180}
+    },
+    ganga:{
+      plan1:{USD:1.50,MXN:30},
+      plan2:{USD:2.50,MXN:45},
+      plan3:{USD:3.50,MXN:60}
+    }
+  };
+  const FREQ_MULT_STUDY={weekly:.25,monthly:1,semiannual:6,annual:12};
+
+  let sendTimer=null;
+  let lastSerialized="";
+
+  function recommendedPlan(){
+    try{
+      return typeof planFromNeeds==="function"
+        ? planFromNeeds(Array.isArray(state?.quiz?.needs)?state.quiz.needs:[])
+        : "";
+    }catch(_){return ""}
+  }
+
+  function selectedPlan(){
+    return state?.exploredPlan || state?.quiz?.plan || recommendedPlan() || "";
+  }
+
+  function selectedFrequency(){
+    return state?.quiz?.paymentFrequency || state?.paymentFrequency ||
+      (typeof selectedPaymentFrequency!=="undefined" ? selectedPaymentFrequency : "") || "monthly";
+  }
+
+  function recommendedFit(planId){
+    if(!planId)return "";
+    const el=document.querySelector(`[data-plan-fit="${planId}"]`);
+    const match=(el?.textContent||"").match(/(\d+)\s*%/);
+    if(match)return match[1]+"%";
+    if(state?.recommendation?.plan===planId && state?.recommendation?.score!=null){
+      return String(state.recommendation.score).replace(/%$/,"")+"%";
+    }
+    return "";
+  }
+
+  function residenceText(){
+    const q=state?.quiz||{};
+    const country=q.residence==="US"?"Estados Unidos":q.residence==="MX"?"México":(q.residence||"");
+    const mine=[country,q.residenceState].filter(Boolean).join(" · ");
+    const family=q.familyState ? `Familia: ${q.familyState}` : "";
+    return [mine,family].filter(Boolean).join(" | ");
+  }
+
+  function finalPrice(planId,freq,currency){
+    if(!planId)return "";
+    const variant=EXPERIMENT_VARIANT||"";
+    const base=PRICE_MAPS[variant]?.[planId]?.[currency];
+    if(base==null)return "";
+    return Number((base*(FREQ_MULT_STUDY[freq]||1)).toFixed(2));
+  }
+
+  function buildPayload(){
+    const q=state?.quiz||{};
+    const rec=recommendedPlan();
+    const selected=selectedPlan();
+    const freq=selectedFrequency();
+    const currency=state?.currency||"USD";
+    const lead=state?.diagnosticLead||{};
+    const hasLead=Boolean((lead.email||"").trim() || (lead.phone||"").trim());
+    const contactType=(lead.email||"").trim()
+      ? "Correo"
+      : (lead.phone||"").trim() ? "Celular/WhatsApp" : "";
+    const contact=(lead.email||"").trim() || (lead.phone||"").trim() || "";
+
+    return {
+      session_id:SESSION_ID,
+      scenario:SCENARIO_LABELS[EXPERIMENT_VARIANT]||EXPERIMENT_VARIANT||"",
+      residencia:residenceText(),
+      personas:q.people ?? "",
+      necesidades:(Array.isArray(q.needs)?q.needs:[]).map(x=>NEED_LABELS[x]||x),
+      gasto_medico:SPEND_LABELS[q.medicalSpend]||q.medicalSpend||"",
+      wtp:WTP_LABELS[q.wtp]||q.wtp||"",
+      plan_recomendado:PLAN_LABELS_STUDY[rec]||rec||"",
+      fit_recomendado:recommendedFit(rec),
+      plan_seleccionado:PLAN_LABELS_STUDY[selected]||selected||"",
+      frecuencia_pago:FREQ_LABELS_STUDY[freq]||freq||"",
+      precio_final:finalPrice(selected,freq,currency),
+      moneda:currency,
+      lead_guardado:hasLead?"Sí":"No",
+      tipo_contacto:contactType,
+      contacto:contact,
+      que_harias:INTENT_LABELS_STUDY[state?.purchaseIntent]||state?.purchaseIntent||""
+    };
+  }
+
+  function meaningful(payload){
+    return Boolean(
+      payload.residencia ||
+      (payload.necesidades && payload.necesidades.length) ||
+      payload.gasto_medico ||
+      payload.wtp ||
+      payload.plan_recomendado ||
+      payload.contacto ||
+      payload.que_harias
+    );
+  }
+
+  async function sendSnapshot(){
+    const payload=buildPayload();
+    if(!meaningful(payload))return;
+
+    const serialized=JSON.stringify(payload);
+    if(serialized===lastSerialized)return;
+    lastSerialized=serialized;
+
+    try{
+      await fetch(STUDY_ENDPOINT,{
+        method:"POST",
+        mode:"no-cors",
+        headers:{"Content-Type":"text/plain;charset=utf-8"},
+        body:serialized,
+        keepalive:true
+      });
+      console.debug("[study-sheet] snapshot sent",payload);
+    }catch(error){
+      console.warn("[study-sheet] error",error);
+      lastSerialized="";
+    }
+  }
+
+  function scheduleSnapshot(delay=120){
+    clearTimeout(sendTimer);
+    sendTimer=setTimeout(sendSnapshot,delay);
+  }
+
+  // Cuestionario: espera a que el handler original actualice state y luego guarda.
+  document.addEventListener("click",function(e){
+    if(e.target.closest(".type-option[data-field]")){
+      scheduleSnapshot(180);
+      return;
+    }
+    if(e.target.closest(".intent-btn[data-intent]")){
+      scheduleSnapshot(180);
+      return;
+    }
+    if(e.target.closest("#saveQuoteContact")){
+      // El handler original guarda el lead en state antes de hacer su await.
+      scheduleSnapshot(350);
+      return;
+    }
+    if(e.target.closest("#skipQuoteContact")){
+      scheduleSnapshot(180);
+      return;
+    }
+  },true);
+
+  document.addEventListener("change",function(e){
+    if(e.target.matches("#residenceState,#familyState,#peopleRange")){
+      scheduleSnapshot(180);
+    }
+  },true);
+
+  // Plan, frecuencia, precio, moneda y recomendación:
+  // observamos el resultado final ya renderizado para registrar siempre la última selección.
+  const resultRoot=document.querySelector(".quotation-result") || document.body;
+  const observer=new MutationObserver(function(mutations){
+    if(mutations.some(m=>{
+      const t=m.target?.nodeType===1?m.target:m.target?.parentElement;
+      return t?.closest?.("#resultPrice,#resultPlan,[data-plan-fit],.payment-frequency-options,.plan-explorer");
+    })){
+      scheduleSnapshot(220);
+    }
+  });
+  observer.observe(resultRoot,{subtree:true,childList:true,characterData:true,attributes:true,attributeFilter:["class","aria-pressed"]});
+
+  // Expuesto sólo para pruebas manuales en consola si fuera necesario.
+  window.__salud2goStudySnapshot=sendSnapshot;
+})();
+</script>
+
 </body>
 </html>
